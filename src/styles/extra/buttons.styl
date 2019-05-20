@@ -1,0 +1,50 @@
+.btn-primary
+  $height 36px
+  $radius $height / 2
+
+  background dodgerblue
+  border-radius $radius
+  box-shadow 0 4px 16px alpha(black, 0.2)
+  color white
+  font inherit
+  transition box-shadow, transform
+  transition-duration 50ms
+
+  width 100%
+  height $height
+
+  &:active
+    box-shadow 0 4px 8px alpha(black, 0.2)
+    transform translateY(1px)
+
+.btn-group
+  $height = 30px
+  $radius = $height / 2
+
+  display flex
+  align-items center
+  justify-content center
+
+  button
+    background alpha(black, 0.1)
+    border 1px solid alpha(white, 0.1)
+    color inherit
+    font inherit
+    font-size 0.9em
+    line-height $height
+    padding 0 $radius
+
+    &:hover
+      background alpha(black, 0.2)
+
+    &.selected
+      background linear-gradient(transparent, alpha(black, 0.05)) dodgerblue
+      border-color transparent
+
+    &:first-child
+      border-top-left-radius $radius
+      border-bottom-left-radius $radius
+
+    &:last-child
+      border-top-right-radius $radius
+      border-bottom-right-radius $radius

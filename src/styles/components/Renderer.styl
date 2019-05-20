@@ -1,0 +1,29 @@
+.renderer
+  background darken(#3a3a3c, 25%)
+
+  width 100%
+  height 28vh
+
+  position relative
+
+  &--wrapper
+    height 100%
+
+    &.fullscreen
+      background inherit
+
+      width 100%
+
+      position fixed
+      z-index 10
+      top 0
+      left 0
+
+      & + button
+        position fixed
+        z-index 10
+
+  button
+    position absolute
+    bottom 0
+    right 0

@@ -1,0 +1,74 @@
+.vue-select
+  $height = 36px
+  $radius = $height / 2
+  $radius2 = $radius / 2
+
+  position relative
+
+  &.open
+    z-index 15
+
+  &.open &--label
+    border-radius $radius2 $radius2 0 0
+    transition-delay 0
+
+    & button
+      transform rotate(0.5turn)
+
+  &.open &--options
+    padding-bottom $radius2
+    transition-delay 200ms
+
+    max-height 300px
+
+  &--label
+    background white
+    border-radius $radius
+    box-shadow 0 4px 8px alpha(black, 0.1)
+    color #333
+    padding-left $radius
+    transition border-radius 200ms
+    transition-delay 100ms
+
+    height $height
+
+    display flex
+    align-items center
+
+    & label
+      flex-grow 1
+
+    & button
+      background none !important
+      transition transform 200ms
+
+      height 100%
+
+  &--options
+    background linear-gradient(alpha(black, 0.05), transparent 20px) white
+    border-radius 0 0 $radius2 $radius2
+    color #333
+    overflow auto
+    transition max-height, padding
+    transition-duration 100ms
+
+    width 100%
+    max-height 0
+
+    position absolute
+
+    li
+      font-size 0.9em
+      list-style none
+      padding 8px $radius
+
+      &:not(:last-child)
+        border-bottom 1px solid alpha(black, 0.04)
+
+      &:hover
+        background alpha(black, 0.1)
+        border-color transparent
+
+      &.selected
+        background linear-gradient(transparent, alpha(black, 0.1)) dodgerblue
+        color white

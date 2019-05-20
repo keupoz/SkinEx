@@ -1,0 +1,49 @@
+{
+  "name": "skinex",
+  "appname": "SkinEx",
+  "version": "0.4.0",
+  "description": "Pony skin tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp",
+    "dev": "NODE_ENV=development gulp dev",
+    "path": "echo $PATH | tr ':' '\n'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keupoz/PonyTools.git"
+  },
+  "author": "keupoz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/keupoz/PonyTools/issues"
+  },
+  "homepage": "https://github.com/keupoz/PonyTools#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "browser-sync": "^2.26.3",
+    "gulp": "^4.0.0",
+    "gulp-newer": "^1.4.0",
+    "gulp-pug": "^4.0.1",
+    "gulp-stylus": "^2.7.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.6.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-commonjs": "^9.2.1",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-replace": "^2.1.0",
+    "rollup-plugin-uglify": "^6.0.2",
+    "rollup-plugin-vue": "^4.7.2",
+    "vue-template-compiler": "^2.6.9"
+  },
+  "dependencies": {
+    "colorwheel2": "github:keupoz/colorwheel2",
+    "file-saver": "^2.0.1",
+    "three": "^0.104.0",
+    "vue": "^2.6.9"
+  }
+}

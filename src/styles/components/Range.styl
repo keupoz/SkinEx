@@ -1,0 +1,61 @@
+.vue-range
+  $height = 6px
+  $radius = $height / 2
+
+  &--wrapper
+    width 100%
+    height 36px
+
+    display flex
+    align-items center
+
+  &--track
+    background #dedede
+    border-radius $radius
+    margin 0 5px
+
+    height $height
+
+    position relative
+
+    flex-grow 1
+
+  &--labels
+    width 100%
+
+    position absolute
+    bottom 100%
+
+    display flex
+    justify-content space-between
+
+    & label
+      font-size 0.8em
+      margin-bottom 2px
+      opacity 0.7
+
+  &--fill
+    background dodgerblue
+    border-radius $radius
+
+    height 100%
+
+    position relative
+
+    display flex
+    align-items center
+    flex-direction row-reverse
+
+  &--thumb
+    $size = 7px
+
+    background dodgerblue
+    border 3px solid white
+    border-radius 50%
+    box-shadow 0 4px 16px alpha(black, 0.3)
+    transform translateX(50%)
+
+    width $size
+    height $size
+
+    position absolute

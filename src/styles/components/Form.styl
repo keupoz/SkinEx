@@ -1,0 +1,53 @@
+.form
+  $btn-width = 60px
+  $height = 40px
+  $radius = $height / 2
+
+  padding 10px
+
+  form
+    border-radius $radius
+    box-shadow 0 8px 16px alpha(black, 0.15)
+    overflow hidden
+
+    position relative
+
+  input
+    background alpha(black, 0.4)
+    color #eee
+    font inherit
+    padding-left $radius
+    padding-right $btn-width
+    transition background, color, padding-right
+    transition-duration 200ms
+
+    width 100%
+    height $height
+
+    &.empty:not(:focus)
+      padding-right $radius
+
+      & + button
+        opacity 0.25
+
+    &:focus
+      background white
+      color #333
+      padding-right 10px + $btn-width
+
+      & + button
+        background dodgerblue
+
+  button
+    background transparent
+    border-radius $radius 0 0 $radius
+    color white
+    transition background, color, opacity
+    transition-duration 200ms
+
+    width $btn-width
+    height $height
+
+    position absolute
+    top 0
+    right 0

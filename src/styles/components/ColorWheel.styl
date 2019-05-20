@@ -1,0 +1,40 @@
+.vue-colorwheel
+  &--input
+    $height = 36px
+    $radius = $height / 2
+
+    margin-bottom 20px
+
+    position relative
+
+    ^[0]--preview
+      $margin = 8px
+      $size = $height - 2 * $margin
+
+      background #44a
+      border-radius 50%
+      margin $margin
+
+      width $size
+      height $size
+
+      position absolute
+      top 0
+      left 0
+
+    input
+      backface-visibility white
+      border-radius $radius
+      box-shadow 0 8px 16px alpha(black, 0.1)
+      box-sizing border-box
+      color #111
+      font inherit
+      line-height $height
+      padding-left $height
+      padding-right $radius
+
+      width 100%
+
+  canvas
+    display block
+    margin auto
