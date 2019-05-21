@@ -89,11 +89,12 @@ export default {
 
     drag (e) {
       let { clientX: x } = e.changedTouches ? e.changedTouches[0] : e,
-          bounds = this.$refs.track.getBoundingClientRect();
+          bounds = this.$refs.track.getBoundingClientRect(),
+          oldVal = this.val;
 
       x -= bounds.left;
       this.setValue(x / bounds.width * this.range + this.nmin);
-      this.$emit('input', this.val);
+      if (oldVal !== this.val) this.$emit('input', this.val);
     },
 
     dragEnd () {

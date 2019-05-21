@@ -42,7 +42,7 @@ export default function registerPixels (pixels) {
 
         if (this.model.current !== model) {
           this.model.setModel(model);
-          return true;
+          return false;
         }
       });
 
@@ -55,7 +55,7 @@ export default function registerPixels (pixels) {
       .add('THREE_QUARTERS', 0x8a6b7f)
       .add('FULL',           0x000000)
       .updateModel(function updateTail (model) {
-        if (!(model instanceof ModelPony)) return true;
+        if (!(model instanceof ModelPony)) return false;
 
         let { tail, tailBak } = model;
 
@@ -75,7 +75,7 @@ export default function registerPixels (pixels) {
       .add('MALE',        0xffffff)
       .add('ABOMONATION', 0x888888)
       .updateModel(function updateSnuzzle (model) {
-        if (!(model instanceof ModelPony)) return true;
+        if (!(model instanceof ModelPony)) return false;
 
         let { snout, stallionSnout, mareSnout } = model;
 
@@ -100,7 +100,7 @@ export default function registerPixels (pixels) {
   pixels
     .registerPixel(ColorPixel, 0,1, 'MAGIC_COLOR', false, 0x4444aa)
       .updateModel(function updateMagic (model) {
-        if (!(model instanceof ModelPony)) return true;
+        if (!(model instanceof ModelPony)) return false;
 
         let color = this.getColor();
         model.hornGlow.children.forEach(child => child.material.color.set(color));

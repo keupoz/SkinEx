@@ -1,11 +1,9 @@
 import saveAs from 'file-saver'
 
-import ajax from '../ajax'
 import ICCRemover from '../ICCRemover'
 
 export default class FileManager {
-  constructor (app, skin, pixels, model) {
-    this.app    = app;
+  constructor (skin, pixels, model) {
     this.skin   = skin;
     this.pixels = pixels;
     this.model  = model;
@@ -23,45 +21,42 @@ export default class FileManager {
     this.input = input;
   }
 
-  loadBuffer (buff, callback) {
-    buff = ICCRemover.clear(buff);
+  loadBuffer (buff) {
+    return new Promise((resolve, reject) => {
+      buff = ICCRemover.clear(buff);
 
-    if (!buff) this.app.error('Couldn\'t parse PNG');
+      if (!buff) reject('Couldn\'t parse PNG');
 
-    let img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(img.src);
-      this.skin.setSkin(img);
-      this.model.update();
-      this.pixels.update();
-      if (callback) callback();
-    };
-    img.src = URL.createObjectURL(new Blob([ buff ], { type: 'image/png' }));
-  }
+      let img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(img.src);
+        this.skin.setSkin(img);
+        this.model.update();
+        this.pixels.update();
 
-  loadSkin (url, callback) {
-    this.progress = 0;
-
-    let xhr = ajax('GET', 'arraybuffer', url, () => {
-      if (xhr.status == 200) this.loadBuffer(xhr.response, callback);
-      else {
-        let err = 'Got not OK response (' + xhr.status + ')';
-        this.app.error('FileManager.loadSkin', err);
-        if (callback) callback(err);
-      }
-    }, (err) => {
-      this.app.error('FileManager.loadSkin', err);
-      if (callback) callback(err);
-    }, (e) => {
-      this.progress = e.loaded / e.total;
+        resolve();
+      };
+      img.src = URL.createObjectURL(new Blob([ buff ], { type: 'image/png' }));
     });
   }
 
-  loadBlob (blob, callback) {
-    let F = new FileReader();
-    F.onload = () => this.loadBuffer(F.result, callback);
-    F.onerror = () => this.app.error('Couldn\'t read file');
-    F.readAsArrayBuffer(blob);
+  async loadSkin (url) {
+    let response = await fetch(url);
+
+    if (response.ok) {
+      let buff = await response.arrayBuffer();
+      await this.loadBuffer(buff);
+      return { response, err: '' };
+    } else return { response, err: 'Got not OK response (' + response.status + ')' };
+  }
+
+  loadBlob (blob) {
+    return new Promise((resolve, reject) => {
+      let F = new FileReader();
+      F.onload = () => this.loadBuffer(F.result).then(() => resolve());
+      F.onerror = () => reject('Couldn\'t read file');
+      F.readAsArrayBuffer(blob);
+    });
   }
 
 

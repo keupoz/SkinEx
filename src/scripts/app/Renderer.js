@@ -57,7 +57,10 @@ export default class Renderer {
 
     window.addEventListener('resize', this.updateSize.bind(this));
 
-    model.render(this.updateFocus.bind(this));
+    model.render((resetFocus) => {
+      if (resetFocus) this.resetFocus();
+      else this.updateFocus(true);
+    });
   }
 
   updateSize () {

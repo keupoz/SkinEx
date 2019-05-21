@@ -20,7 +20,7 @@ export default class AbstractPixel {
   updateModel (handler) {
     if (typeof handler == 'function') this.handler = handler;
     else if (this.handler) {
-      let shouldRender = !this.handler(this.model.current);
+      let shouldRender = this.handler(this.model.current) !== false;
       if (shouldRender) this.model.render();
     }
   }

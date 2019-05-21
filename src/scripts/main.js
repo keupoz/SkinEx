@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 import './utils'
 
 import Vue    from 'vue'

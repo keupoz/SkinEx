@@ -1,7 +1,7 @@
 {
   "name": "skinex",
   "appname": "SkinEx",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Pony skin tools",
   "main": "index.js",
   "scripts": {
@@ -41,6 +41,7 @@
     "vue-template-compiler": "^2.6.9"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "colorwheel2": "github:keupoz/colorwheel2",
     "file-saver": "^2.0.1",
     "three": "^0.104.0",

@@ -1,3 +1,7 @@
+@keyframes form-loading
+  from { transform: rotate(360deg) }
+  to   { transform: rotate(0deg) }
+
 .form
   $btn-width = 60px
   $height = 40px
@@ -51,3 +55,10 @@
     position absolute
     top 0
     right 0
+
+    &.loading i
+      animation 1.5s linear 0s infinite form-loading
+
+  div.error
+    color tomato
+    padding 10px 10px 0

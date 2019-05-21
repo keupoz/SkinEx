@@ -14,20 +14,33 @@
         @focus = "focused = true"
         @blur  = "focused = false" />
 
-      <IconButton :icon="focused ? 'check' : value ? 'refresh' : 'block'" />
+      <IconButton :class="{ loading, error }" :icon="icon" />
     </form>
+    <div class="error">{{ error }}</div>
   </div>
 </template>
 
 <script>
 export default {
-  props: [ 'placeholder' ],
+  props: [ 'lastError', 'loading', 'placeholder' ],
 
   data () {
     return {
       focused: false,
-      value: ''
+      value: '',
+      error: '',
+      timer: undefined
     };
+  },
+
+  computed: {
+    icon () {
+      if (this.loading) return 'sync';
+      else if (this.error) return 'error_outline';
+      else if (this.focused) return 'check'
+      else if (this.value) return 'refresh';
+      else return 'block';
+    }
   },
 
   methods: {
@@ -36,7 +49,20 @@ export default {
 
       if (!this.value) return;
 
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = undefined;
+      }
+      this.error = '';
+
       this.$emit('submit', this.value);
+    }
+  },
+
+  watch: {
+    'lastError' (newVal) {
+      this.error = newVal;
+      this.timer = setTimeout(() => this.error = '', 5000);
     }
   }
 }
