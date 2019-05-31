@@ -2,15 +2,16 @@ import 'babel-polyfill'
 
 import './utils'
 
-import Vue    from 'vue'
+import Vue from 'vue'
 
 import ColorWheel from '../components/ColorWheel.vue'
 import IconButton from '../components/IconButton.vue'
-import VRange from '../components/Range.vue'
-import VSelect from '../components/Select.vue'
+import VCheckbox  from '../components/Checkbox.vue'
+import VRange     from '../components/Range.vue'
+import VSelect    from '../components/Select.vue'
 
-import AppComponent from '../components/App.vue'
-import AppClass from './app/App'
+import AppComponent   from '../components/App.vue'
+import AppClass       from './app/App'
 import registerPixels from './pixels.config'
 
 // VUE INIT
@@ -18,6 +19,7 @@ import registerPixels from './pixels.config'
 // Register some components globally
 Vue.component('ColorWheel', ColorWheel);
 Vue.component('IconButton', IconButton);
+Vue.component('VCheckbox',  VCheckbox);
 Vue.component('VRange',     VRange);
 Vue.component('VSelect',    VSelect);
 

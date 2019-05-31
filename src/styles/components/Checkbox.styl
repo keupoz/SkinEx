@@ -1,0 +1,22 @@
+.vue-checkbox
+  display flex
+  align-items center
+
+  &--icon
+    $size = 20px
+
+    background linear-gradient(lightgray, darkgray)
+    border-radius 5px
+    box-shadow 1px 1px 8px alpha(black, 0.1)
+    color transparent
+    display inline-block
+    font-size $size !important
+    line-height $size
+    text-align center
+
+    width $size
+    height $size
+
+    &.checked
+      background linear-gradient(dodgerblue, darken(dodgerblue, 25%))
+      color white
