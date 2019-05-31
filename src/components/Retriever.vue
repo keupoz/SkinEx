@@ -2,10 +2,10 @@
   <div class="retriever">
     <form @submit.prevent="submit">
       <input
-        :class = "{ empty: !value }"
+        :class = "{ empty: !nickname }"
 
         type    = "text"
-        v-model = "value"
+        v-model = "nickname"
 
         autocomplete = "off"
         spellcheck   = "false"
@@ -16,6 +16,7 @@
 
       <IconButton :class="{ loading, error }" :icon="icon" />
     </form>
+    <VCheckbox label="Recursive" :checked="false" @change="recursive = $event" />
     <div class="error">{{ error }}</div>
   </div>
 </template>
@@ -27,7 +28,9 @@ export default {
   data () {
     return {
       focused: false,
-      value: '',
+      nickname: '',
+      recursive: false,
+
       error: '',
       timer: undefined
     };
@@ -45,9 +48,9 @@ export default {
 
   methods: {
     submit () {
-      this.value = this.value.replace(/\s*/g, '');
+      this.nickname = this.nickname.replace(/\s*/g, '');
 
-      if (!this.value) return;
+      if (!this.nickname) return;
 
       if (this.timer) {
         clearTimeout(this.timer);
@@ -55,7 +58,7 @@ export default {
       }
       this.error = '';
 
-      this.$emit('submit', this.value);
+      this.$app.retrieveSkin(this.nickname, this.recursive);
     }
   },
 

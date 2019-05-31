@@ -44,12 +44,16 @@ export default class App {
       });
   }
 
-  async retrieveSkin (nickname) {
+  async retrieveSkin (nickname, recursive) {
     try {
       this.loading = true;
       this.lastRetrieveError = '';
 
-      let r = await this.file.loadSkin(this.skinUrl.replace(/%s/g, nickname));
+      let url = this.skinUrl.replace(/%s/g, nickname);
+
+      if (recursive) url += '?recursive';
+
+      let r = await this.file.loadSkin(url);
       this.loading = false;
 
       if (r.err) {

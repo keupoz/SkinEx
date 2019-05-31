@@ -9,9 +9,7 @@
       placeholder = "Enter nickname"
 
       :lastError = "$app.lastRetrieveError"
-      :loading   = "$app.loading"
-
-      @submit="$app.retrieveSkin($event)" />
+      :loading   = "$app.loading" />
     
     <Editor v-show="currentTab.name == 'editor'" />
   </div>
