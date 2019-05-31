@@ -1,6 +1,7 @@
 <template>
   <div class="app" v-if="$app.ready">
     <Header />
+    <Renderer />
     <Form
       placeholder = "Enter nickname"
 
@@ -8,7 +9,6 @@
       :loading   = "$app.loading"
 
       @submit="$app.retrieveSkin($event)" />
-    <Renderer />
     <Editor />
   </div>
 
