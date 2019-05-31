@@ -1,5 +1,5 @@
 <template>
-  <div class="form">
+  <div class="retriever">
     <form @submit.prevent="submit">
       <input
         :class = "{ empty: !value }"

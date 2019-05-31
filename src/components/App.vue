@@ -5,7 +5,7 @@
 
     <TabSwitcher :currentTab="currentTab" :tabs="tabs" @change="currentTab = $event" />
 
-    <Form v-show="currentTab.name == 'retriever'"
+    <Retriever v-show="currentTab.name == 'retriever'"
       placeholder = "Enter nickname"
 
       :lastError = "$app.lastRetrieveError"
@@ -23,13 +23,13 @@
 import Loader from './Loader.vue'
 
 import Header      from './Header.vue'
-import Form        from './Form.vue'
 import Editor      from './Editor.vue'
 import Renderer    from './Renderer.vue'
+import Retriever   from './Retriever.vue'
 import TabSwitcher from './TabSwitcher.vue'
 
 export default {
-  components: { Loader, Header, Renderer, TabSwitcher, Form, Editor },
+  components: { Loader, Header, Renderer, TabSwitcher, Retriever, Editor },
 
   data () {
     let tabs = [
