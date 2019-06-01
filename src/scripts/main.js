@@ -12,7 +12,7 @@ import VSelect    from '../components/Select.vue'
 
 import AppComponent   from '../components/App.vue'
 import AppClass       from './app/App'
-import registerPixels from './pixels.config'
+import registerPixels from './config/pixels'
 
 // VUE INIT
 

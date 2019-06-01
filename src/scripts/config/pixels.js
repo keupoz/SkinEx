@@ -1,11 +1,11 @@
-import ColorPixel  from './pixels/ColorPixel'
-import CommonPixel from './pixels/CommonPixel'
-import MaskPixel   from './pixels/MaskPixel'
-import RacePixel   from './pixels/RacePixel'
-import RangePixel  from './pixels/RangePixel'
+import ColorPixel  from '../pixels/ColorPixel'
+import CommonPixel from '../pixels/CommonPixel'
+import MaskPixel   from '../pixels/MaskPixel'
+import RacePixel   from '../pixels/RacePixel'
+import RangePixel  from '../pixels/RangePixel'
 
-import ModelHuman from './models/ModelHuman'
-import ModelPony from './models/ModelPony'
+import ModelHuman from '../models/ModelHuman'
+import ModelPony  from '../models/ModelPony'
 
 export default function registerPixels (pixels) {
   // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/PonyRace.java
