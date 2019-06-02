@@ -7,12 +7,14 @@
       ref="input"
       :id="id"
       :checked="lchecked"
-      
+
       @change="update" />
 
     <div
       class="vue-checkbox--icon material-icons"
-      :class="{ checked: lchecked }">check</div>
+      :class="{ checked: lchecked }"
+
+      @click="$refs.input.click()">check</div>
 
     <label :for="id">{{ label }}</label>
   </div>
