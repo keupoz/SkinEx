@@ -1,7 +1,7 @@
 {
   "name": "skinex",
   "appname": "SkinEx",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Pony skin tools",
   "main": "index.js",
   "scripts": {
