@@ -12,7 +12,9 @@ import VSelect    from '../components/Select.vue'
 
 import AppComponent   from '../components/App.vue'
 import AppClass       from './app/App'
-import registerPixels from './config/pixels'
+
+import registerPixels  from './config/pixels'
+import registerServers from './config/servers'
 
 // VUE INIT
 
@@ -26,6 +28,7 @@ Vue.component('VSelect',    VSelect);
 // APP INIT
 const App = new AppClass();
 registerPixels(App.pixels);
+registerServers(App.server);
 // Make App instance reactive
 Vue.observable(App);
 // Make App instance available in all Vue instances

@@ -1,5 +1,12 @@
 <template>
   <div class="retriever">
+    <VSelect
+      label="Skin server"
+      :options="$app.server.servers"
+      :value="$app.server.current"
+
+      @change="$app.server.setCurrent($event)" />
+
     <form @submit.prevent="submit">
       <input
         :class = "{ empty: !nickname }"
@@ -41,7 +48,7 @@ export default {
       if (this.loading) return 'sync';
       else if (this.error) return 'error_outline';
       else if (this.focused) return 'check'
-      else if (this.value) return 'refresh';
+      else if (this.nickname) return 'refresh';
       else return 'block';
     }
   },

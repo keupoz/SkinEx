@@ -17,48 +17,48 @@
 
     position relative
 
-  input
-    background alpha(black, 0.4)
-    color #eee
-    font inherit
-    padding-left $radius
-    padding-right $btn-width
-    transition background, color, padding-right
-    transition-duration 200ms
+    input
+      background alpha(black, 0.4)
+      color #eee
+      font inherit
+      padding-left $radius
+      padding-right $btn-width
+      transition background, color, padding-right
+      transition-duration 200ms
 
-    width 100%
-    height $height
+      width 100%
+      height $height
 
-    &.empty:not(:focus)
-      padding-right $radius
+      &.empty:not(:focus)
+        padding-right $radius
 
-      & + button
-        opacity 0.25
+        & + button
+          opacity 0.25
 
-    &:focus
-      background white
-      color #333
-      padding-right 10px + $btn-width
+      &:focus
+        background white
+        color #333
+        padding-right 10px + $btn-width
 
-      & + button
-        background dodgerblue
+        & + button
+          background dodgerblue
 
-  button
-    background transparent
-    border-radius $radius 0 0 $radius
-    color white
-    transition background, color, opacity
-    transition-duration 200ms
+    button
+      background transparent
+      border-radius $radius 0 0 $radius
+      color white
+      transition background, color, opacity
+      transition-duration 200ms
 
-    width $btn-width
-    height $height
+      width $btn-width
+      height $height
 
-    position absolute
-    top 0
-    right 0
+      position absolute
+      top 0
+      right 0
 
-    &.loading i
-      animation 1.5s linear 0s infinite form-loading
+      &.loading i
+        animation 1.5s linear 0s infinite form-loading
 
   div.error
     color tomato

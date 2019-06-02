@@ -1,8 +1,9 @@
-import FileManager  from './FileManager'
-import ModelManager from './ModelManager'
-import PixelManager from './PixelManager'
-import Renderer     from './Renderer'
-import SkinManager  from './SkinManager'
+import FileManager   from './FileManager'
+import ModelManager  from './ModelManager'
+import PixelManager  from './PixelManager'
+import Renderer      from './Renderer'
+import ServerManager from './ServerManager'
+import SkinManager   from './SkinManager'
 
 import { appname, version } from '../../../package.json'
 
@@ -10,11 +11,12 @@ export default class App {
   constructor () {
     this.name    = appname;
     this.version = version;
-    this.skinUrl = 'https://keupoz.herokuapp.com/ponyskins/valhalla/%s';
 
     this.skin   = new SkinManager();
     this.model  = new ModelManager(this.skin);
     this.pixels = new PixelManager(this.skin, this.model);
+
+    this.server = new ServerManager();
     this.file   = new FileManager(this.skin, this.pixels, this.model);
 
     this.renderer = new Renderer(this.model);
@@ -49,10 +51,8 @@ export default class App {
       this.loading = true;
       this.lastRetrieveError = '';
 
-      let url = this.skinUrl.replace(/%s/g, nickname);
-
-      if (recursive) url += '?recursive';
-
+      let url = this.server.getSkinURL(nickname, recursive);
+      
       let r = await this.file.loadSkin(url);
       this.loading = false;
 
