@@ -16,7 +16,8 @@
       <li
         v-for="option in options"
         :key="option.value"
-        :class="{ selected: current == option  }"
+        :class="{ selected: current == option, disabled: option.disabled  }"
+
         @click="select(option)">{{ option.label }}</li>
     </ul>
   </div>
@@ -59,6 +60,8 @@ export default {
     },
 
     select (option) {
+      if (option.disabled) return;
+
       this.current = option;
       this.hideDropdown();
       this.$emit('input', option.value);

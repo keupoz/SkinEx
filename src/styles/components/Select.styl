@@ -65,10 +65,13 @@
       &:not(:last-child)
         border-bottom 1px solid alpha(black, 0.04)
 
-      &:hover
+      &:not(.disabled):not(.selected):hover
         background alpha(black, 0.1)
         border-color transparent
 
       &.selected
         background linear-gradient(transparent, alpha(black, 0.1)) dodgerblue
         color white
+
+      &.disabled
+        color darkgray
