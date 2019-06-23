@@ -1,4 +1,4 @@
-import { Mesh } from 'three/src/objects/Mesh.js'
+import { Mesh } from 'three'
 
 const VERTICES = [ [0,3,1], [3,2,1] ];
 

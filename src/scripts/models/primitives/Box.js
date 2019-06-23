@@ -1,9 +1,9 @@
-import { BoxGeometry } from 'three/src/geometries/BoxGeometry.js'
+import { BoxGeometry } from 'three'
 
-import Mixin from './Mixin.js'
+import Mixin from './Mixin'
 
-export default class Cube extends Mixin {
-  constructor (material, textureX,textureY, width,height,depth, offsetX,offsetY,offsetZ, mcscale = 0, mirror) {
+export default class Box extends Mixin {
+  constructor (material, textureX, textureY, width, height, depth, offsetX, offsetY, offsetZ, scaleFactor = 0, mirror) {
     super(new BoxGeometry(width, height, depth), material);
 
     this.textureX = textureX;
@@ -17,7 +17,7 @@ export default class Cube extends Mixin {
     this.offsetY = offsetY;
     this.offsetZ = offsetZ;
 
-    this.mcscale = mcscale;
+    this.scaleFactor = scaleFactor;
 
     this.mirror = mirror;
 
@@ -26,17 +26,17 @@ export default class Cube extends Mixin {
   }
 
   resetVertices () {
-    let { width, height, depth, mcscale, offsetX, offsetY, offsetZ } = this,
+    let { width, height, depth, scaleFactor, offsetX, offsetY, offsetZ } = this,
         { vertices } = this.geometry,
 
-        x1 =   width + mcscale + offsetX,
-        x2 =          -mcscale + offsetX,
+        x1 =   width + scaleFactor + offsetX,
+        x2 =          -scaleFactor + offsetX,
 
-        y1 = -height - mcscale - offsetY,
-        y2 =           mcscale - offsetY,
+        y1 = -height - scaleFactor - offsetY,
+        y2 =           scaleFactor - offsetY,
 
-        z1 =  -depth - mcscale - offsetZ,
-        z2 =           mcscale - offsetZ;
+        z1 =  -depth - scaleFactor - offsetZ,
+        z2 =           scaleFactor - offsetZ;
 
     vertices[0].set(x1, y2, z2);
     vertices[1].set(x1, y2, z1);
@@ -46,6 +46,24 @@ export default class Cube extends Mixin {
     vertices[5].set(x2, y2, z2);
     vertices[6].set(x2, y1, z1);
     vertices[7].set(x2, y1, z2);
+  }
+
+  setSize (width, height, depth) {
+    this.width  = this.geometry.parameters.width  = width;
+    this.height = this.geometry.parameters.height = height;
+    this.depth  = this.geometry.parameters.depth  = depth;
+
+    this.generateUVs();
+
+    return this;
+  }
+
+  setOffset (offsetX, offsetY, offsetZ) {
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+    this.offsetZ = offsetZ;
+
+    return this;
   }
 
   setMirror (mirror) {
