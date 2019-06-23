@@ -52,7 +52,7 @@ export default class App {
       this.lastRetrieveError = '';
 
       let url = this.server.getSkinURL(nickname, recursive);
-      
+
       let r = await this.file.loadSkin(url);
       this.loading = false;
 
