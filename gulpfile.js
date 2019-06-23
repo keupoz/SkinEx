@@ -1,7 +1,7 @@
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production';
 
-const OUTPUTDIR = 'docs',
-      PRODUCTION = process.env.NODE_ENV === 'production',
+const PRODUCTION = process.env.NODE_ENV === 'production',
+      OUTPUTDIR = PRODUCTION ? 'docs' : 'dev',
       MODULES_GLOB = process.cwd() + '/node_modules/**';
 
 let cachePlugins = {};
