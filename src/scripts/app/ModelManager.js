@@ -17,7 +17,7 @@ export default class ModelManager extends Object3D {
   }
 
   update () {
-    this.material.update(64, this.skin.isExtended ? 64 : 32);
+    this.material.update();
     this.modelsList.forEach(model => model.remap());
   }
 

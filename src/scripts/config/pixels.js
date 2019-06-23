@@ -4,49 +4,45 @@ import MaskPixel   from '../pixels/MaskPixel'
 import RacePixel   from '../pixels/RacePixel'
 import RangePixel  from '../pixels/RangePixel'
 
-import ModelHuman from '../models/ModelHuman'
-import ModelPony  from '../models/ModelPony'
+import ModelPlayer     from '../models/ModelPlayer'
+import ModelEarthpony  from '../models/ModelEarthpony'
+import ModelPegasus    from '../models/ModelPegasus'
+import ModelUnicorn    from '../models/ModelUnicorn'
+import ModelAlicorn    from '../models/ModelAlicorn'
+import ModelChangeling from '../models/ModelChangeling'
+import ModelZebra      from '../models/ModelZebra'
+import ModelBatpony    from '../models/ModelBatpony'
+import ModelSeapony    from '../models/ModelSeapony'
 
 export default function registerPixels (pixels) {
-  // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/PonyRace.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/Race.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/client/model/races/PlayerModels.java
   // mask: isPony, isSeapony, hasHorn, hasWings
   pixels
     .registerPixel(RacePixel, 0,0, 'RACE', true)
-      .add('NONE',                0x000000, 0b0000, ModelHuman)
-      .add('EARTHPONY',           0xf9b131, 0b1000, ModelPony)
-      .add('PEGASUS',             0x88caf0, 0b1001, ModelPony)
-      .add('UNICORN',             0xd19fe4, 0b1010, ModelPony)
-      .add('ALICORN',             0xfef9fc, 0b1011, ModelPony)
-      .add('CHANGELING',          0x282b29, 0b1011, ModelPony)
-      .add('ZEBRA',               0xd0cccf, 0b1000, ModelPony)
-      .add('REFORMED_CHANGELING', 0xcaed5a, 0b1011, ModelPony)
-      .add('GRIFFIN',             0xae9145, 0b1001, ModelPony)
-      .add('HIPPOGRIFF',          0xd6ddac, 0b1001, ModelPony)
-      .add('BATPONY',             0xeeeeee, 0b1001, ModelPony)
-      .add('SEAPONY',             0x3655dd, 0b1110, ModelPony)
-      .updateModel(function updateRace () {
-        let { model } = this.current.extra;
+      .add('NONE',                0x000000, 0b0000, ModelPlayer)
+      .add('EARTHPONY',           0xf9b131, 0b1000, ModelEarthpony)
+      .add('PEGASUS',             0x88caf0, 0b1001, ModelPegasus)
+      .add('UNICORN',             0xd19fe4, 0b1010, ModelUnicorn)
+      .add('ALICORN',             0xfef9fc, 0b1011, ModelAlicorn)
+      .add('CHANGELING',          0x282b29, 0b1011, ModelChangeling)
+      .add('ZEBRA',               0xd0cccf, 0b1000, ModelZebra)
+      .add('REFORMED_CHANGELING', 0xcaed5a, 0b1011, ModelChangeling)
+      .add('GRIFFIN',             0xae9145, 0b1001, ModelPegasus)
+      .add('HIPPOGRIFF',          0xd6ddac, 0b1001, ModelPegasus)
+      .add('BATPONY',             0xeeeeee, 0b1001, ModelBatpony)
+      .add('SEAPONY',             0x3655dd, 0b1110, ModelSeapony)
+      .updateModel(function updateRace (model, byUser) {
+        let raceModel = this.current.extra.model;
 
-        if (model instanceof ModelPony) {
-          let { head, horn, hornGlow, wings, batEars, bodyGroup } = model;
-
-          if (this.hasHorn) head.add(horn, hornGlow);
-          else head.remove(horn, hornGlow);
-
-          if (this.hasWings) bodyGroup.add(wings);
-          else bodyGroup.remove(wings);
-
-          if (this.current.name == 'BATPONY') head.add(batEars);
-          else head.remove(batEars);
-        }
-
-        if (this.model.current !== model) {
-          this.model.setModel(model);
+        if (model !== raceModel) {
+          this.model.setModel(raceModel);
+          if (byUser) this.parent.updateModel();
           return false;
         }
       });
 
-  // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/TailLengths.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/TailLength.java
   pixels
     .registerPixel(RangePixel, 1,0, 'TAIL_LENGTH')
       .add('STUB',           0x425844)
@@ -55,39 +51,24 @@ export default function registerPixels (pixels) {
       .add('THREE_QUARTERS', 0x8a6b7f)
       .add('FULL',           0x000000)
       .updateModel(function updateTail (model) {
-        if (!(model instanceof ModelPony)) return false;
+        if (!(model instanceof ModelEarthpony)) return false;
 
-        let { tail, tailBak } = model;
-
-        tail.remove(...tailBak);
-
-        let tailLength = this.current.extra;
-
-        if (tailLength)
-          for (let i = 0; i < tailLength; i++)
-            tail.add(tailBak[i]);
+        model.tail.setLength(this.current.extra);
       });
 
-  // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/PonyGender.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/Gender.java
   pixels
     .registerPixel(CommonPixel, 2,0, 'SNUZZLE')
       .add('FEMALE',      0x000000)
       .add('MALE',        0xffffff)
       .add('ABOMONATION', 0x888888)
       .updateModel(function updateSnuzzle (model) {
-        if (!(model instanceof ModelPony)) return false;
+        if (!(model instanceof ModelEarthpony)) return false;
 
-        let { snout, stallionSnout, mareSnout } = model;
-
-        snout.remove(stallionSnout, mareSnout);
-
-        switch (this.current.name) {
-          case 'FEMALE': snout.add(mareSnout); break;
-          case 'MALE':   snout.add(stallionSnout); break;
-        }
+        model.snout.setGender(this.current.name);
       });
 
-  // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/PonySize.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/Size.java
   pixels
     .registerPixel(CommonPixel, 3,0, 'MODEL_SIZE')
       .add('TALL',     0x534b76)
@@ -100,13 +81,12 @@ export default function registerPixels (pixels) {
   pixels
     .registerPixel(ColorPixel, 0,1, 'MAGIC_COLOR', false, 0x4444aa)
       .updateModel(function updateMagic (model) {
-        if (!(model instanceof ModelPony)) return false;
+        if (!(model instanceof ModelUnicorn)) return false;
 
-        let color = this.getColor();
-        model.hornGlow.children.forEach(child => child.material.color.set(color));
+        model.horn.setGlowColor(this.getColor());
       });
 
-  // https://github.com/MineLittlePony/MineLittlePony/blob/1.12.2.3.2.1/src/main/java/com/minelittlepony/pony/data/PonyWearable.java
+  // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/Wearable.java
   pixels
     .registerPixel(MaskPixel, 1,1, 'WEARABLES')
       .add('MUFFIN',       50)

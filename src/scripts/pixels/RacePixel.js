@@ -14,10 +14,10 @@ export default class RacePixel extends CommonPixel {
     return this.isPony;
   }
 
-  set (value) {
+  set (value, byUser) {
     this.current = value;
     this.updateMask();
-    return this.updateModel();
+    return this.updateModel(byUser);
   }
 
   updateMask () {

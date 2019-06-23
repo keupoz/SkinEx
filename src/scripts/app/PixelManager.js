@@ -15,6 +15,7 @@ export default class PixelManager {
 
   registerPixel (PixelClass, x,y, name, control, extra) {
     let pixel = new PixelClass(name, x,y, this.model, extra);
+    pixel.parent = this;
     this.pixels[name.toLowerCase()] = pixel;
     this.pixelsList.push(pixel);
 
@@ -40,5 +41,9 @@ export default class PixelManager {
 
       pixel.setByColor(color);
     });
+  }
+
+  updateModel () {
+    this.pixelsList.forEach(pixel => pixel.updateModel());
   }
 }

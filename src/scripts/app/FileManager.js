@@ -45,6 +45,7 @@ export default class FileManager {
 
     if (response.ok) {
       let buff = await response.arrayBuffer();
+      this.skin.setSlim(response.headers.get('X-Model') == 'slim');
       await this.loadBuffer(buff);
       return { response, err: '' };
     } else return { response, err: 'Got not OK response (' + response.status + ')' };

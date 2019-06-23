@@ -17,10 +17,10 @@ export default class AbstractPixel {
   setByColor () {}
   set () {}
 
-  updateModel (handler) {
-    if (typeof handler == 'function') this.handler = handler;
+  updateModel (a) {
+    if (typeof a == 'function') this.handler = a;
     else if (this.handler) {
-      let shouldRender = this.handler(this.model.current) !== false;
+      let shouldRender = this.handler(this.model.current, a) !== false;
       if (shouldRender) this.model.render();
     }
   }

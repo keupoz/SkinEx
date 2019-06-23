@@ -4,7 +4,7 @@
     :value="pixel.current"
     :options="pixel.list"
 
-    @change="pixel.set($event)" />
+    @change="pixel.set($event, true)" />
 
   <VRange v-else-if="pixel.type == 'RANGE'"
     :label="pixel.label"
@@ -15,7 +15,7 @@
     :max="max.extra"
 
     :value="pixel.current.extra"
-    @input="pixel.set($event)" />
+    @input="pixel.set($event, true)" />
 
   <ColorWheel v-else-if="pixel.type == 'COLOR'"
     :label="pixel.label"
@@ -23,7 +23,7 @@
 
     @start="colorChanging = true"
     @end="colorChanging = false"
-    @input="pixel.set($event)" />
+    @input="pixel.set($event, true)" />
 </template>
 
 <script>

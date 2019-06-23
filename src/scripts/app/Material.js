@@ -27,8 +27,7 @@ export default class Material extends MeshLambertMaterial {
     this.setUVSize(64,64);
   }
 
-  update (UVWidth, UVHeight) {
-    this.setUVSize(UVWidth, UVHeight);
+  update () {
     this.map.needsUpdate = true;
   }
 

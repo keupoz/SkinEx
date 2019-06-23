@@ -96,33 +96,31 @@ export default class Renderer {
 
     if (intersects.length) {
       let { object }  = intersects[0],
-          { isGroup } = object;
+          { intersectable } = object;
 
       if (object.parent) {
-        while (object.parent && !isGroup) {
+        while (object.parent && !intersectable) {
           object = object.parent;
-          isGroup = object.isGroup && object.intersectable;
+          ({ intersectable } = object);
         }
-        if (isGroup) this.intersect = object;
+        if (intersectable) this.intersect = object;
         else this.intersect = intersects[0].object;
       } else this.intersect = object;
 
       this.highlight.setFromObject(this.intersect).update();
       this.scene.add(this.highlight);
       this.render();
-      //this.canvas.style.cursor = 'pointer'; // Highlight issue on touch devices
       return true;
     } else if (this.intersect && !intersects.length) {
       this.scene.remove(this.highlight);
       this.intersect = null;
       this.render();
-      //this.canvas.style.cursor = 'default';
       return true;
     }
   }
 
   resetFocus () {
-    this.focusHelper.setFromObject(this.model.current.body).update();
+    this.focusHelper.setFromObject(this.model.current.getSub('body')).update();
     this.controls.target.copy(this.focusHelper.geometry.boundingSphere.center);
     this.light.target.position.copy(this.controls.target);
     this.selectedPiece = null;
