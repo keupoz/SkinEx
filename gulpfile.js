@@ -1,7 +1,8 @@
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'production';
 
 const OUTPUTDIR = 'docs',
-      PRODUCTION = process.env.NODE_ENV === 'production';
+      PRODUCTION = process.env.NODE_ENV === 'production',
+      MODULES_GLOB = process.cwd() + '/node_modules/**';
 
 let cachePlugins = {};
 function plugin (name) {
@@ -15,7 +16,8 @@ const gulp  = require('gulp'),
       pug    = require('gulp-pug'),
       stylus = require('gulp-stylus'),
 
-      rollup = require('rollup'),
+      rollup   = require('rollup'),
+      anymatch = require('anymatch'),
 
       fs        = require('fs'),
       rmdirSync = require('rimraf').sync,
@@ -85,7 +87,9 @@ gulp.task('js', async function () {
   if (!jswatcher) return;
 
   let newWatchFiles = bundle.watchFiles.filter(file => !file.startsWith('\u0000')),
-      watch = newWatchFiles.filter(file => oldWatchFiles.indexOf(file) == -1),
+      watch = newWatchFiles.filter(function (file) {
+        return !anymatch(MODULES_GLOB, file) && oldWatchFiles.indexOf(file) == -1;
+      }),
       unwatch = oldWatchFiles.filter(file => bundle.watchFiles.indexOf(file) == -1);
 
   jswatcher.unwatch(unwatch);

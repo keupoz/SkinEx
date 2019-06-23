@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/keupoz/PonyTools#readme",
   "devDependencies": {
+    "anymatch": "^3.0.2",
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
