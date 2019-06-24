@@ -8,6 +8,8 @@ export default class NeckRenderer extends PlaneRenderer {
   init () {
     super.init();
 
+    this.scale.set(0.9,0.9,0.9);
+
     this.tex(0,16)
       .at(NECK_CENTRE_X, NECK_CENTRE_Y, NECK_CENTRE_Z)
       .offset(NECK_CENTRE_X, NECK_CENTRE_Y, NECK_CENTRE_Z)
