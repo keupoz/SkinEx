@@ -36,7 +36,7 @@ export default class WingRenderer extends BoxRenderer {
       .rotate(ROTATE_90, 0,0);
   }
 
-  addFeathers (right, l) {
+  addFeathers (right) {
     let r = right ? -1 : 1;
 
     this.getSub('extended')
