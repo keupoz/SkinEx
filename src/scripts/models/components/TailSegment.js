@@ -3,11 +3,9 @@ import PlaneRenderer from '../renderers/PlaneRenderer'
 import { TAIL_RP_X, TAIL_RP_Y, TAIL_RP_Z_NOTSNEAK } from '../constants'
 
 export default class TailSegment extends PlaneRenderer {
-  constructor (material, skin) {
-    super(material, skin);
-  }
-
   init (index) {
+    super.init();
+
     let texY = (index % 2) * 4,
         y = index * 4;
 

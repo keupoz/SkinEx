@@ -1,11 +1,12 @@
 import ModelEarthpony from './ModelEarthpony'
 
-import ModelWings from './components/ModelWings'
+import ModelWings   from './components/ModelWings'
+import WingRenderer from './components/WingRenderer'
 
 export default class ModelPegasus extends ModelEarthpony {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
-    this.addSub('wings', ModelWings);
+    this.addSub('wings', ModelWings, WingRenderer);
   }
 }

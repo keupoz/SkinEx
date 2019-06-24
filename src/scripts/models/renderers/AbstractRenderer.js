@@ -4,7 +4,7 @@
 import { Bone, Group } from 'three'
 
 export default class AbstractRenderer extends Bone {
-  constructor (material, skin) {
+  constructor (material, skin, ...args) {
     super();
 
     this.material = material;
@@ -28,7 +28,11 @@ export default class AbstractRenderer extends Bone {
     this.subsList       = [];
 
     this.add(this.model);
+
+    this.init.apply(this, args);
   }
+
+  init () {}
 
   setTextureOffset (x,y) {
     this.textureOffsetX = x;
@@ -112,8 +116,8 @@ export default class AbstractRenderer extends Bone {
     return this;
   }
 
-  addSub (name, SubRenderer) {
-    let sub = new SubRenderer(this.material, this.skin);
+  addSub (name, SubRenderer, ...args) {
+    let sub = new SubRenderer(this.material, this.skin, ...args);
 
     sub.name = name;
 
@@ -150,7 +154,7 @@ export default class AbstractRenderer extends Bone {
 
     if (this.slimList.length) {
       if (this.skin.isSlim) {
-        this.remadd(this.unslimList, this.slimList)
+        this.remadd(this.unslimList, this.slimList);
       } else {
         this.remadd(this.slimList, this.unslimList);
       }

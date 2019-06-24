@@ -3,9 +3,7 @@ import Plane from '../primitives/Plane'
 import Planes from '../primitives/Planes'
 
 export default class PlaneRenderer extends AbstractRenderer {
-  constructor (material, skin) {
-    super(material, skin);
-
+  init () {
     this.mirrory = false;
     this.mirrorz = false;
 

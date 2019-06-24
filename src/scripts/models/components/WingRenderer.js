@@ -5,11 +5,9 @@ import { EXT_WING_RP_X, EXT_WING_RP_Y, EXT_WING_RP_Z } from '../constants'
 import { ROTATE_90 } from '../constants'
 
 export default class WingRenderer extends BoxRenderer {
-  constructor (material, skin) {
-    super(material, skin);
-  }
-
   init (right, texY) {
+    super.init();
+
     this.sub('folded').tex(56, texY);
     this.sub('extended').tex(56 + (!right ? 1 : 0), texY + 3);
 

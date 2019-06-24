@@ -1,13 +1,11 @@
 import AbstractRenderer from '../renderers/AbstractRenderer'
 
-import WingRenderer from './WingRenderer'
-
 export default class ModelWings extends AbstractRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init (WingRenderer) {
+    super.init();
 
-    this.addSub('leftWing',  WingRenderer).init(false, 32);
-    this.addSub('rightWing', WingRenderer).init(true,  16);
+    this.addSub('leftWing',  WingRenderer, false, 32);
+    this.addSub('rightWing', WingRenderer, true,  16);
 
     this.fold();
   }

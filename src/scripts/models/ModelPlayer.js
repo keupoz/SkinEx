@@ -1,8 +1,8 @@
 import BoxRenderer from './renderers/BoxRenderer'
 
 export default class ModelPlayer extends BoxRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
     this.sub('head')
       .tex( 0,0).box('base', -4,-8,-4, 8,8,8)

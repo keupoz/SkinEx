@@ -5,8 +5,8 @@ import { HORN_X, HORN_Y, HORN_Z          } from '../constants'
 import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z } from '../constants'
 
 export default class UnicornHorn extends BoxRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
     this
       .offset(HORN_X, HORN_Y, HORN_Z)

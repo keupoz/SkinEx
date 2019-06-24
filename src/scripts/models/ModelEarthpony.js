@@ -10,10 +10,10 @@ import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z             } from './constants'
 import { BODY_RP_Y_NOTSNEAK, BODY_RP_Z_NOTSNEAK      } from './constants'
 
 export default class ModelEarthpony extends ModelPlayer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
-    this.addSub('neck', NeckRenderer);
+    this.addSub('neck',  NeckRenderer);
     this.addSub('torso', TorsoRenderer);
 
     let head     = this.getSub('head'),

@@ -1,11 +1,11 @@
 import PlaneRenderer from '../renderers/PlaneRenderer'
 
-import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z, BODY_RP_Y_NOTSNEAK } from '../constants'
+import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z } from '../constants'
 import { BODY_CENTRE_X, BODY_CENTRE_Y, BODY_CENTRE_Z } from '../constants'
 
 export default class TorsoRenderer extends PlaneRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
     this
       .offset(BODY_CENTRE_X, BODY_CENTRE_Y, BODY_CENTRE_Z)

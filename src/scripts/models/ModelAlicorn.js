@@ -1,11 +1,12 @@
 import ModelUnicorn from './ModelUnicorn'
 
-import ModelWings  from './components/ModelWings'
+import ModelWings   from './components/ModelWings'
+import WingRenderer from './components/WingRenderer'
 
 export default class ModelAlicorn extends ModelUnicorn {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
-    this.wings = this.addSub('wings', ModelWings);
+    this.wings = this.addSub('wings', ModelWings, WingRenderer);
   }
 }

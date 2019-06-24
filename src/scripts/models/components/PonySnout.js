@@ -4,8 +4,8 @@ import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z             } from '../constants'
 import { HEAD_CENTRE_X, HEAD_CENTRE_Y, HEAD_CENTRE_Z } from '../constants'
 
 export default class PonySnout extends PlaneRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
     this.sub('mare')
       .around(HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z)

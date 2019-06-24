@@ -5,8 +5,8 @@ import { NECK_ROT_X } from '../constants'
 import { HEAD_RP_X, HEAD_RP_Y, HEAD_RP_Z } from '../constants'
 
 export default class NeckRenderer extends PlaneRenderer {
-  constructor (material, skin) {
-    super(material, skin);
+  init () {
+    super.init();
 
     this.tex(0,16)
       .at(NECK_CENTRE_X, NECK_CENTRE_Y, NECK_CENTRE_Z)
