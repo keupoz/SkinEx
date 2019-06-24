@@ -1,6 +1,5 @@
+import ModelPegasus from './ModelPegasus'
 import ModelUnicorn from './ModelUnicorn'
-
-import ModelPegasus from './ModelPegasus';
 
 export default class ModelAlicorn extends ModelUnicorn {
   init () {
