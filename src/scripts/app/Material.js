@@ -9,6 +9,7 @@ export default class Material extends MeshLambertMaterial {
       flatShading: true,
       premultipliedAlpha: true,
       side: DoubleSide,
+      transparent: true,
 
       map: new Texture(
         canvas,
