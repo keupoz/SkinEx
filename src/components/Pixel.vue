@@ -6,6 +6,16 @@
 
     @change="pixel.set($event, true)" />
 
+  <VSelect v-else-if="pixel.type == 'MASK'"
+    :label="pixel.label"
+    :value="pixel.selected"
+    :options="pixel.list"
+    :multiple="true"
+    :max="3"
+
+    @select="pixel.select($event.name, true)"
+    @unselect="pixel.unselect($event.name, true)" />
+
   <VRange v-else-if="pixel.type == 'RANGE'"
     :label="pixel.label"
     :minLabel="min.label"

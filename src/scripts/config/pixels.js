@@ -78,14 +78,6 @@ export default function registerPixels (pixels) {
       .add('YEARLING', 0x53beff)
       .add('FOAL',     0xffbe53);
 
-  pixels
-    .registerPixel(ColorPixel, 0,1, 'MAGIC_COLOR', false, 0x4444aa)
-      .updateModel(function updateMagic (model) {
-        if (!(model instanceof ModelUnicorn)) return false;
-
-        model.horn.setGlowColor(this.getColor());
-      });
-
   // https://github.com/MineLittlePony/MineLittlePony/blob/master/src/main/java/com/minelittlepony/pony/meta/Wearable.java
   pixels
     .registerPixel(MaskPixel, 1,1, 'WEARABLES')
@@ -93,5 +85,16 @@ export default function registerPixels (pixels) {
       .add('HAT',         100)
       .add('ANTLERS',     150)
       .add('SADDLE_BAGS', 200)
-      .add('STETSON',     250);
+      .add('STETSON',     250)
+      .updateModel(function updateWearables () {
+        console.log('MaskPixel list', JSON.parse(JSON.stringify(this.selected)));
+      });
+
+  pixels
+    .registerPixel(ColorPixel, 0,1, 'MAGIC_COLOR', false, 0x4444aa)
+      .updateModel(function updateMagic (model) {
+        if (!(model instanceof ModelUnicorn)) return false;
+
+        model.horn.setGlowColor(this.getColor());
+      });
 }
