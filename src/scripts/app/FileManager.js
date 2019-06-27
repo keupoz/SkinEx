@@ -1,6 +1,6 @@
 import saveAs from 'file-saver'
 
-import ICCRemover from '../ICCRemover'
+import { downloadBuff, loadBuff } from '../utils'
 
 export default class FileManager {
   constructor (skin, pixels, model) {
@@ -21,34 +21,23 @@ export default class FileManager {
     this.input = input;
   }
 
-  loadBuffer (buff) {
-    return new Promise((resolve, reject) => {
-      buff = ICCRemover.clear(buff);
+  async loadBuffer (buff) {
+    let img = await loadBuff(buff);
 
-      if (!buff) reject('Couldn\'t parse PNG');
-
-      let img = new Image();
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        this.skin.setSkin(img);
-        this.model.update();
-        this.pixels.update();
-
-        resolve();
-      };
-      img.src = URL.createObjectURL(new Blob([ buff ], { type: 'image/png' }));
-    });
+    this.skin.setSkin(img);
+    this.model.update();
+    this.pixels.update();
   }
 
   async loadSkin (url) {
-    let response = await fetch(url);
+    let { response, err, buff } = await downloadBuff(url);
 
-    if (response.ok) {
-      let buff = await response.arrayBuffer();
-      this.skin.setSlim(response.headers.get('X-Model') == 'slim');
-      await this.loadBuffer(buff);
-      return { response, err: '' };
-    } else return { response, err: 'Got not OK response (' + response.status + ')' };
+    if (err) return { response, err };
+
+    this.skin.setSlim(response.headers.get('X-Model') == 'slim');
+    await this.loadBuffer(buff);
+
+    return { response, err: '' };
   }
 
   loadBlob (blob) {
