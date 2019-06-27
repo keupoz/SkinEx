@@ -15,7 +15,7 @@ export default class MaskPixel extends AbstractPixel {
   }
 
   getColor () {
-    let colors = this.selected.map(item => this.get(item).value);
+    let colors = this.selected.map(item => item.value);
     this.color.setRGB(...colors);
     return this.color.num;
   }
@@ -39,16 +39,18 @@ export default class MaskPixel extends AbstractPixel {
   }
 
   select (name) {
+    let val = this.get(name);
+
     if (this.selected.length >= 3) throw new RangeError('MaskPixel: Maximum count exceeded');
-    if (!this.get(name)) throw new Error('MaskPixel: Unknown item (' + name + ')');
+    if (!val) throw new Error('MaskPixel: Unknown item (' + name + ')');
 
-    this.selected.push(name);
+    this.selected.push(val);
 
-    return this;
+    return this.updateModel();
   }
 
   unselect (name) {
-    let i = this.selected.indexOf(name);
+    let i = this.selected.map(item => item.name).indexOf(name);
     if (i !== -1) this.selected.splice(i, 1);
 
     return this;
@@ -57,9 +59,9 @@ export default class MaskPixel extends AbstractPixel {
   setByColor (color) {
     this.color.setNUM(color).RGB.forEach(ch => {
       let item = this.getByValue(ch);
-      if (item) this.selected.push(item.name);
+      if (item) this.selected.push(item);
     });
 
-    return this;
+    return this.updateModel();
   }
 }

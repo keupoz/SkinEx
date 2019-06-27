@@ -1,4 +1,5 @@
 import FileManager   from './FileManager'
+// import GearManager   from './GearManager'
 import ModelManager  from './ModelManager'
 import PixelManager  from './PixelManager'
 import Renderer      from './Renderer'
@@ -17,6 +18,7 @@ export default class App {
     this.pixels = new PixelManager(this.skin, this.model);
 
     this.server = new ServerManager();
+    // this.gears  = new GearManager();
     this.file   = new FileManager(this.skin, this.pixels, this.model);
 
     this.renderer = new Renderer(this.model);
@@ -36,14 +38,18 @@ export default class App {
   }
 
   init () {
-    this.file.loadSkin('./assets/skins/DaringDo.png')
-      .then(({ err }) => {
-        if (err) return this.error('App.init', 'Couldn\'t load default skin');
-        this.ready = true;
-      })
-      .catch((err) => {
-        this.error('App.init', err);
-      });
+    Promise.all([
+      /* this.gears.loadTexture('antlers', 'assets/textures/antlers.png'),
+      this.gears.loadTexture('muffin',  'assets/textures/muffin.png'),
+      this.gears.loadTexture('stetson', 'assets/textures/stetson.png') */
+    ])
+    .then(() => this.file.loadSkin('assets/skins/DaringDo.png'))
+    .then(({ err }) => {
+      if (err) return this.error('App.init', 'Couldn\'t load default skin');
+      this.ready = true;
+    }).catch((err) => {
+      this.error('App.init', err);
+    });
   }
 
   async retrieveSkin (nickname, recursive) {
