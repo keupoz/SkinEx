@@ -1,0 +1,52 @@
+{
+    "name": "skinex",
+    "version": "1.0.0",
+    "description": "SkinEx source code",
+    "private": true,
+    "scripts": {
+        "build": "gulp build",
+        "dev": "gulp dev"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/keupoz/SkinEx.git"
+    },
+    "author": "keupoz",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/keupoz/SkinEx/issues"
+    },
+    "homepage": "https://github.com/keupoz/SkinEx#readme",
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.14.0",
+        "@keupoz/strict-queryselector": "^1.1.0",
+        "@mojotech/json-type-validation": "^3.1.0"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^14.0.0",
+        "@rollup/plugin-json": "^4.1.0",
+        "@rollup/plugin-node-resolve": "^8.4.0",
+        "@rollup/plugin-typescript": "^5.0.2",
+        "@types/browser-sync": "^2.26.1",
+        "@types/gulp": "^4.0.6",
+        "@types/gulp-if": "0.0.33",
+        "@types/gulp-sass": "^4.0.0",
+        "@types/gulp-sourcemaps": "0.0.32",
+        "@types/sass": "^1.16.0",
+        "browser-sync": "^2.26.12",
+        "del": "^5.1.0",
+        "glob": "^7.1.6",
+        "gulp": "^4.0.2",
+        "gulp-if": "^3.0.0",
+        "gulp-pug": "^4.0.1",
+        "gulp-sass": "^4.1.0",
+        "gulp-sourcemaps": "^2.6.5",
+        "rollup": "^2.23.0",
+        "rollup-plugin-terser": "^6.1.0",
+        "sass": "^1.26.10",
+        "ts-node": "^8.10.2",
+        "tslint": "^6.1.2",
+        "typescript": "^3.9.7",
+        "yaml": "^1.10.0"
+    }
+}

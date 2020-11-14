@@ -1,0 +1,9 @@
+{
+    "rules": {
+        "no-default-export": true,
+        "prefer-const": true,
+        "prefer-readonly": true,
+        "quotemark": true,
+        "semicolon": true
+    }
+}
