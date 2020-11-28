@@ -1,0 +1,47 @@
+@import "variables";
+
+$size: $height / 2;
+$radius: $size / 4;
+
+.checkbox {
+    label {
+        display: flex;
+        align-items: center;
+    }
+
+    &--control {
+        background: $bg-color;
+        border: $border;
+        border-radius: $radius;
+        box-shadow: $shadow;
+        color: $primary-color;
+        font-size: $size;
+        font-weight: 900;
+        margin-right: 0.5em;
+        overflow: hidden;
+        text-align: center;
+
+        width: $size;
+        height: $size;
+
+        flex-shrink: 0;
+    }
+
+    &:hover &--control {
+        background-image: $darkness;
+    }
+
+    &:active &--control {
+        background-image: $darkness, $darkness;
+        box-shadow: none;
+    }
+
+    input:checked + label &--control {
+        background-color: $primary-color;
+        color: $color-white;
+
+        &::before {
+            content: "check";
+        }
+    }
+}

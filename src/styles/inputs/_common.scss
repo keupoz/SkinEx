@@ -1,0 +1,52 @@
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.input {
+    background: $bg-color;
+    border: $border;
+    border-radius: $radius;
+    box-shadow: $shadow;
+    color: $color;
+    font: inherit;
+    line-height: $height;
+    padding: 0 $padding;
+
+    height: $height;
+}
+
+input {
+    &[type="text"],
+    &[type="password"] {
+        &.input {
+            width: 100%;
+        }
+    }
+}
+
+.input-group {
+    width: 100%;
+
+    display: flex;
+
+    .input {
+        border-radius: 0;
+
+        flex-grow: 1;
+
+        &.shrink {
+            flex-grow: unset;
+        }
+
+        &:first-child {
+            border-top-left-radius: $radius;
+            border-bottom-left-radius: $radius;
+        }
+
+        &:last-child {
+            border-top-right-radius: $radius;
+            border-bottom-right-radius: $radius;
+        }
+    }
+}

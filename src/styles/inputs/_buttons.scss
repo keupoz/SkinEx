@@ -1,0 +1,56 @@
+@import "variables";
+
+.btn-primary {
+    background: linear-gradient(transparent, rgba(black, 0.1)) $primary-color;
+    color: $color-white;
+
+    &:hover {
+        background: $primary-color;
+    }
+
+    &:active {
+        background: linear-gradient(rgba(black, 0.05), rgba(black, 0.05)) $primary-color;
+        box-shadow: none;
+    }
+}
+
+.btn-secondary {
+    background: rgba(black, 0.1);
+    color: $color-white;
+
+    &:hover {
+        background: rgba(black, 0.2);
+    }
+
+    &:active {
+        background: rgba(black, 0.3);
+        box-shadow: none;
+    }
+}
+
+.btn-icon {
+    $size: 50px;
+
+    background: none;
+    color: inherit;
+
+    height: $size;
+    width: $size;
+
+    flex-shrink: 0;
+
+    &.reset {
+        border-radius: 50%;
+
+        height: $height;
+        width: $height;
+    }
+
+    &:hover {
+        background: rgba(black, 0.1);
+    }
+
+    &:active {
+        background: rgba(black, 0.2);
+    }
+}

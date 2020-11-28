@@ -9,7 +9,7 @@ html(lang="en")
     head
         title= title
 
-        meta(name="viewport", content="width = device-width")
+        meta(name="viewport", content="width = device-width, user-scalable = no")
         meta(charset="utf-8")
 
         //- OpenGraph properties
@@ -22,12 +22,142 @@ html(lang="en")
         meta(property="og:site_name", content=name)
 
         meta(property="og:image", content=`${url}/assets/DaringDo_Background.png`)
-        meta(name="theme-color", content="#ff0080")
+        meta(name="theme-color", content="#3a3a3c")
 
         link(rel="shortcut icon", href="assets/favicon.ico")
         link(rel="stylesheet", href="styles/index.css")
 
     body
+        - var checkboxesCount = 0;
+
+        mixin checkbox(label)
+            - var id = `chkbx-${checkboxesCount++}`;
+
+            .checkbox&attributes(attributes)
+                input(id=id, type="checkbox", hidden)
+                label(for=id)
+                    .checkbox--control.m-icon
+                    .checkbox--label= label
+
+        mixin range()
+            .range&attributes(attributes)
+                .range--track
+                    .range--fill(style={ width: "50%" })
+                        .range--thumb
+
+        - var dropdownsCount = 0;
+
+        mixin dropdown()
+            - var id = `drpdwn-${dropdownsCount++}`;
+
+            .dropdown&attributes(attributes)
+                input.dropdown--state(id=id, type="checkbox", hidden)
+
+                label.dropdown--label(for=id)
+                    .dropdown--values(data-none="None selected")
+                    .dropdown--icon.m-icon
+
+                .dropdown--options
+
+        mixin labeled(label)
+            .labeled&attributes(attributes)
+                .labeled--label= label
+                .labeled--content
+                    block
+
+        mixin pixel(label)
+            - var id = `pixel-${label.toLowerCase().replace(/\s+/g, "-")}`;
+            - var color = "000000";
+
+            +labeled(label).pixel(id=id)&attributes(attributes)
+                block
+                .pixel--color(style={ "background-color": `#${color}` }, data-copytext="Click to copy")= color
+                button.pixel--reset.btn-icon.reset(title="Reset initial value") #[i.m-icon refresh]
+
+        #loader
+            #loader-animation
+            #loader-message Loading ...
+            #loader-error(hidden) Something went wrong
+
+        #dropzone(hidden)
+            #dropzone-icon.m-icon download
+            #dropzone-label Release to load file
+            #dropzone-error(hidden) Can't accept file
+
         #app
+            header
+                #app-name(data-version="N/A")= name
+                button#skin-load.btn-icon(title="Load skin from device") #[i.m-icon folder]
+                button#skin-save.btn-icon(title="Save skin to device") #[i.m-icon save]
+                button#skin-reset.btn-icon(title="Reset skin settings") #[i.m-icon refresh]
+
+            #preview
+                canvas
+
+                #preview-info
+                    div Pose: #[span#preview-pose N/A];
+                    div Item: #[span#preview-item N/A];
+                    div Armor: #[span#preview-armor N/A];
+                    div Focused on: #[span#preview-focused-on N/A];
+                    div Highlighted: #[span#preview-highlighted N/A];
+
+            main
+                +labeled("Enter nickname to get started")
+                    form#skin-retriever.input-group
+                        +dropdown#skin-servers(title="Skin server to search for skin")
+                        input#skin-nickname.input(type="text", placeholder="Nickname", autocomplete="off", spellcheck="false")
+                        button.input.btn-primary.shrink(type="submit") #[i.m-icon check]
+
+                //- +labeled("Sign in")
+                    form#account-credentials.input-group
+                        input#account-login.input(type="text", placeholder="Login")
+                        input#account-password.input(type="password", placeholder="Password")
+                        button.input.btn-primary(type="submit") #[i.m-icon check]
+
+                //- #account-actions
+                    #user-nickname Nickname
+
+                    .input-group
+                        button#account-signout.input.btn-secondary(title="Sign out") #[i.m-icon exit_to_app]
+                        button#account-download.input.btn-secondary(title="Download skin from selected server") #[i.m-icon download]
+                        button#account-upload.input.btn-secondary(title="Upload skin to first selected server") #[i.m-icon upload]
+                        button#account-remove.input.btn-secondary(title="Delete skin from selected server") #[i.m-icon delete]
+
+                .input-group
+                    button#action-pose.input.btn-secondary Pose
+                    button#action-item.input.btn-secondary Item
+                    button#action-armor.input.btn-secondary Armor
+
+                //- #dyes(hidden)
+                    - var dyes = [ "black", "red", "green", "brown", "blue", "purple", "cyan", "light_gray", "gray", "pink", "lime", "yellow", "light_blue", "magenta", "orange", "white" ];
+
+                    for dye in dyes
+                        button.btn-icon #[img(src=`assets/items/${dye}_dye.png`)]
+
+                #layout
+                    canvas#layout-preview(width="64", height="32")
+
+                    +labeled("Width")#layout-width-label
+                        +range#layout-width
+                        button#layout-width-reset.btn-icon.reset(title="Reset initial value") #[i.m-icon refresh]
+
+                #pixels
+                    +pixel("Race")
+                        +dropdown
+
+                    +pixel("Tail length")
+                        +range
+
+                    +pixel("Snout")
+                        +dropdown
+
+                    +pixel("Body type")
+                        +dropdown
+
+                    +pixel("Accessories")
+                        +dropdown
+
+                    +pixel("Magic color")
+                        input.pixel--input.input(type="text", placeholder="Color", value="#4444aa", autocomplete="off", spellcheck="false")
 
         script(src=`scripts/index.js`)

@@ -1,0 +1,50 @@
+@import "variables";
+
+$track-height: 6px;
+$track-radius: $track-height / 2;
+
+.range {
+    height: $height;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    &--track {
+        background: $bg-color;
+        border-radius: $track-radius;
+        margin: 0 5px;
+
+        height: $track-height;
+
+        flex-grow: 1;
+    }
+
+    &--fill {
+        background: $primary-color;
+        border-radius: $track-radius;
+
+        height: 100%;
+
+        position: relative;
+
+        display: flex;
+        align-items: center;
+        flex-direction: row-reverse;
+    }
+
+    &--thumb {
+        $size: $track-height + 2;
+
+        background: $primary-color;
+        border: 3px solid $color-white;
+        border-radius: 50%;
+        box-sizing: unset;
+        transform: translateX(50%);
+
+        height: $size;
+        width: $size;
+
+        position: absolute;
+    }
+}

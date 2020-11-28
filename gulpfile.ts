@@ -1,6 +1,7 @@
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
 import bs from "browser-sync";
 import del from "del";
@@ -13,25 +14,17 @@ import sourcemaps from "gulp-sourcemaps";
 import { rollup, RollupCache } from "rollup";
 import { terser } from "rollup-plugin-terser";
 import SASS from "sass";
-import { initIcons } from "./FontAwesome";
 
 let isProduction = process.env.NODE_ENV === "production";
 
-const FontAwesomeFonts = [
-    require.resolve("@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"),
-    require.resolve("@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2")
-];
-
 (sass as any).compiler = SASS;
-
-const getIcon = initIcons();
 
 task("clean", () => {
     return del("dist");
 });
 
 task("assets", () => {
-    return src(["assets/**"].concat(FontAwesomeFonts), {
+    return src("assets/**", {
         since: lastRun("assets"),
         ignore: ["**/_*", "**/sources/**", "assets"]
     })
@@ -42,11 +35,7 @@ task("pug", () => {
     return src("src/templates/pages/**/*.pug")
         .pipe(pug({
             cache: true,
-            pretty: !isProduction,
-
-            locals: {
-                icon: getIcon
-            }
+            pretty: !isProduction
         }))
         .pipe(dest("dist"));
 });
@@ -73,7 +62,10 @@ task("typescript", async () => {
                 transformMixedEsModules: true
             }),
             typescript(),
-            json()
+            json(),
+            replace({
+                "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)
+            })
         ].concat(isProduction ? [terser()] : [])
     });
 

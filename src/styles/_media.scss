@@ -1,0 +1,25 @@
+$panel-width: 450px;
+
+@media (min-width: (400px + $panel-width)) {
+    #app {
+        width: $panel-width;
+
+        position: relative;
+
+        #preview {
+            position: absolute;
+            left: 100%;
+            top: 0;
+
+            width: calc(100vw - #{$panel-width});
+            height: 100%;
+            max-height: unset;
+        }
+
+        main {
+            overflow-y: scroll;
+
+            height: calc(100vh - 50px);
+        }
+    }
+}

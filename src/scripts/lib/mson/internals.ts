@@ -1,3 +1,5 @@
+import { drawTemplatePiece } from "../utils";
+import { array, of } from "./incomplete";
 import { addElementType, createFile, createTexture, objUtils } from "./loader";
 import { Box, Compound, Cone, Face, Planar, Plane, Quad, Quads, Slot, Vertex } from "./types/internals";
 
@@ -10,74 +12,85 @@ function isPresent<T>(a: T | null): a is T {
     return a !== null;
 }
 
-addElementType<Slot>("mson:slot", (loader, body, _, model, defineName, createElement) => {
+addElementType<Slot>("mson:slot", ({ loader, locals, body, createElement }) => {
     const content: any = objUtils.copy({}, body.content);
-    content.locals = objUtils.copy(objUtils.copy({}, model.locals), content.locals || {});
+    content.locals = objUtils.copy(objUtils.copy({}, locals), content.locals || {});
     content.texture = createTexture(content.texture);
 
-    const newModel = createElement({ model: createFile(content)(loader) });
-
-    if (body.name) defineName(body.name, newModel.model);
+    const newModel = createElement({ model: createFile(content).getModel(loader) });
 
     return newModel;
-}, function (_, context) {
-    this.model.render(context);
+}, function render(ctx) {
+    this.model.render(ctx);
 });
 
-addElementType<Box>("mson:box", (loader, body, locals, model, _, createElement) => {
+addElementType<Box>("mson:box", ({ locals, texture, body, createElement }) => {
     return createElement({
-        from: locals.array(fixedLength(body.from, 3, 0)),
-        size: locals.array(fixedLength(body.size, 3, 0)),
-        texture: loader.getTexture(body.texture, model.texture),
+        from: array(fixedLength(body.from, 3, 0))(locals),
+        size: array(fixedLength(body.size, 3, 0))(locals),
+        texture: createTexture(body.texture, texture),
         stretch: fixedLength(body.stretch, 3, 0),
         mirror: body.mirror
     });
-}, function (_, __) {
-    // TODO: rendering
+}, function (ctx) {
+    if (this.name === "cape") return;
+
+    const [sw, sh, sd] = this.size,
+        { u, v, w, h } = this.texture;
+
+    console.log("Box", { u, v, w, h });
+
+    drawTemplatePiece(ctx, u + sd, v, sw, sd, w, h, this.name, "Top");
+    drawTemplatePiece(ctx, u + sd + sw, v, sw, sd, w, h, this.name, "Bottom");
+    drawTemplatePiece(ctx, u, v + sd, sd, sh, w, h, this.name, "Right");
+    drawTemplatePiece(ctx, u + sd, v + sd, sw, sh, w, h, this.name, "Front");
+    drawTemplatePiece(ctx, u + sd + sw, v + sd, sw, sh, w, h, this.name, "Back");
+    drawTemplatePiece(ctx, u + sd + 2 * sw, v + sd, sd, sh, w, h, this.name, "Left");
+
 });
 
-addElementType<Compound>("mson:compound", (loader, body, locals, model, defineName, createElement) => {
+addElementType<Compound>("mson:compound", ({ loader, name, model, locals, texture, body, createElement }) => {
+    texture = createTexture(body.texture, texture);
+
     const element = createElement({
-        center: locals.array(fixedLength(body.center, 3, 0)),
-        offset: locals.array(fixedLength(body.offset, 3, 0)),
-        rotate: locals.array(fixedLength(body.rotate, 3, 0)),
+        center: array(fixedLength(body.center, 3, 0))(locals),
+        offset: array(fixedLength(body.offset, 3, 0))(locals),
+        rotate: array(fixedLength(body.rotate, 3, 0))(locals),
         mirror: fixedLength(body.mirror, 3, false),
-        visible: body.visible === true,
-        texture: loader.getTexture(body.texture, model.texture),
+        visible: body.visible !== false,
+        texture: texture,
         children: body.children ? (body.children as any[])
-            .map((child) => loader.getElement(child, "mson:compound", model, locals, defineName))
+            .map((child) => loader.getElement(child, "mson:compound", model, locals, texture, name))
             .filter(isPresent) : [],
         cubes: body.cubes ? (body.cubes as any[])
-            .map((cube) => loader.getElement(cube, "mson:box", model, locals, defineName))
+            .map((cube) => loader.getElement(cube, "mson:box", model, locals, texture, name))
             .filter(isPresent) : []
     });
 
-    if (body.name) defineName(body.name, element);
+    if (body.name) element.name = body.name;
 
     return element;
-}, function (_, context) {
+}, function render(ctx) {
     if (!this.visible) return;
 
-    // TODO: rendering
-
-    this.children.forEach((child) => child.render(this, context));
-    this.cubes.forEach((cube) => cube.render(this, context));
+    this.children.forEach((child) => child.render(ctx));
+    this.cubes.forEach((cube) => cube.render(ctx));
 });
 
-addElementType<Plane>("mson:plane", (loader, body, locals, model, _, createElement) => {
+addElementType<Plane>("mson:plane", ({ locals, texture, body, createElement }) => {
     return createElement({
-        position: locals.array(fixedLength(body.position, 3, 0)),
-        size: locals.array(fixedLength(body.size, 2, 0)),
-        texture: loader.getTexture(body.texture, model.texture),
+        position: array(fixedLength(body.position, 3, 0))(locals),
+        size: array(fixedLength(body.size, 2, 0))(locals),
+        texture: createTexture(body.texture, texture),
         mirror: fixedLength(body.mirror, 3, false),
         stretch: fixedLength(body.stretch, 3, 0),
         face: body.face
     });
-}, (_, __) => {
+}, function render(_) {
     // TODO: rendering
 });
 
-addElementType<Planar>("mson:planar", (loader, body, locals, model, _, createElement) => {
+addElementType<Planar>("mson:planar", ({ locals, texture, body, createElement }) => {
     const directions = "up;down;west;east;north;sound".split(";");
 
     const faces: Face[] = [];
@@ -86,10 +99,10 @@ addElementType<Planar>("mson:planar", (loader, body, locals, model, _, createEle
         return {
             position: [element[0], element[1], element[2]],
             size: [element[3], element[4]],
-            texture: loader.getTexture(element.length > 6 ? [
-                locals.get(element[5]),
-                locals.get(element[6])
-            ] : [], model.texture)
+            texture: createTexture(element.length > 6 ? [
+                of(element[5])(locals),
+                of(element[6])(locals)
+            ] : [], texture)
         };
     }
 
@@ -104,22 +117,22 @@ addElementType<Planar>("mson:planar", (loader, body, locals, model, _, createEle
         stretch: fixedLength(body.stretch, 3, 0),
         faces
     });
-}, function (_, __) {
+}, function render(_) {
     this.faces.forEach((_) => {
         // TODO: rendering
     });
 });
 
-addElementType<Cone>("mson:cone", (loader, body, locals, model, _, createElement) => {
+addElementType<Cone>("mson:cone", ({ locals, texture, body, createElement }) => {
     return createElement({
-        from: locals.array(fixedLength(body.from, 3, 0)),
-        size: locals.array(fixedLength(body.size, 3, 0)),
-        texture: loader.getTexture(body.texture, model.texture),
+        from: array(fixedLength(body.from, 3, 0))(locals),
+        size: array(fixedLength(body.size, 3, 0))(locals),
+        texture: createTexture(body.texture, texture),
         stretch: fixedLength(body.stretch, 3, 0),
         mirror: body.mirror,
         taper: body.taper
     });
-}, function (_, __) {
+}, function render(_) {
     // TODO: rendering
 });
 
@@ -142,7 +155,8 @@ function createVertex(body: any): Vertex {
         v: body.v || 0
     };
 }
-addElementType<Quads>("mson:quads", (_, body, __, ___, ____, createElement) => {
+
+addElementType<Quads>("mson:quads", ({ body, createElement }) => {
     const vertices = (body.vertices as any[]).map((vertex) => createVertex(vertex)),
         quads = (body.faces as any[]).map((quad): Quad => {
             return {
@@ -159,7 +173,7 @@ addElementType<Quads>("mson:quads", (_, body, __, ___, ____, createElement) => {
         v: body.v || 0,
         quads
     });
-}, function (_, __) {
+}, function render(_) {
     this.quads.forEach((_) => {
         // TODO: rendering
     });

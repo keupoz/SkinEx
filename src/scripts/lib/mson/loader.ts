@@ -1,31 +1,7 @@
-import { array, of } from "./incomplete";
-import { Element, ElementType, Loader, Model, TextureBody, TextureObject } from "./types/loader";
+import { of } from "./incomplete";
+import { CreateTexture, Element, ElementType, FileObject, Loader, Model } from "./types/loader";
 
-const RESERVED_KEYS = "parent;locals;texture;scale".split(";"),
-    DEFAULT_TEXTURE = createTexture([0, 0, 64, 32]);
-
-const ELEMENT_TYPES: Record<string, ElementType<unknown>> = {};
-
-export const objUtils = {
-    map<T, K>(obj: Record<string, T>, valueMapper: (value: T) => K) {
-        const result: Record<string, K> = {};
-        Object.keys(obj).forEach((key) => result[key] = valueMapper(obj[key]));
-        return result;
-    },
-
-    copy<T>(to: Record<string, T>, from: Record<string, T>) {
-        Object.keys(from).forEach((key) => to[key] = from[key]);
-        return to;
-    },
-
-    subset<T>(obj: Record<string, T>, keys: string[]) {
-        const result: typeof obj = {};
-        keys.forEach((key) => result[key] = obj[key]);
-        return result;
-    }
-};
-
-export function createTexture(body?: TextureBody, parent?: TextureObject): TextureObject {
+export const createTexture: CreateTexture = (body, parent) => {
     if (Array.isArray(body)) {
         return {
             u: body[0] || parent?.u || 0,
@@ -41,53 +17,79 @@ export function createTexture(body?: TextureBody, parent?: TextureObject): Textu
         w: body?.w || parent?.w || 0,
         h: body?.h || parent?.h || 0
     };
-}
+};
 
-export function createFile(body: any) {
+const RESERVED_KEYS = "parent;locals;texture;scale".split(";"),
+    ELEMENT_TYPES: Record<string, ElementType<any>> = {},
+    DEFAULT_TEXTURE = createTexture([0, 0, 64, 32]);
+
+export const objUtils = {
+    map<T, K>(obj: Record<string, T>, valueMapper: (value: T, key: string) => K) {
+        const result: Record<string, K> = {};
+        Object.keys(obj).forEach((key) => result[key] = valueMapper(obj[key], key));
+        return result;
+    },
+
+    copy<T>(to: Record<string, T>, from: Record<string, T>) {
+        Object.keys(from).forEach((key) => to[key] = from[key]);
+        return to;
+    },
+
+    subset(obj: Record<string, any>, keys: string[]) {
+        const result: typeof obj = {};
+        keys.forEach((key) => result[key] = obj[key]);
+        return result;
+    }
+};
+
+export function createFile(body: any): FileObject {
     const parameters = typeof body === "string" ? JSON.parse(body) : body;
 
     function loadElements(loader: Loader, model: Model) {
-        const { locals } = model,
-            incoming: Record<string, Element> = {},
+        const { locals, texture } = model,
             elementNames = Object.keys(parameters).filter((key) => RESERVED_KEYS.indexOf(key) === -1),
-            elements = objUtils.map(objUtils.subset(parameters, elementNames), (element) => {
-                return loader.getElement(element, "mson:compound", model, {
-                    get(input) {
-                        return of(input)(locals);
-                    },
-                    array(input) {
-                        return array(input)(locals);
-                    },
-                    obj(input) {
-                        return objUtils.map(input, (value) => typeof value === "string" ? of(value)(locals) : value);
-                    }
-                }, (name, subElement) => {
-                    incoming[name] = subElement;
-                });
+            elements = objUtils.map(objUtils.subset(parameters, elementNames), (element, name) => {
+                return loader.getElement(element, "mson:compound", model, locals, texture, name);
             });
 
         return elements;
     }
 
-    return function (loader: Loader) {
-        const parent: Model = parameters.parent ? loader.getModel(parameters.parent) : {
-            locals: {},
-            elements: {},
-            texture: DEFAULT_TEXTURE,
-            scale: 0,
+    return {
+        getSkeleton(loader) {
+            const skeleton: Model = parameters.parent ? loader.getModel(parameters.parent) : {
+                name: "__root__",
+                locals: {},
+                elements: {},
+                texture: DEFAULT_TEXTURE,
+                scale: 0,
 
-            render() { }
-        };
+                render() { }
+            };
 
-        objUtils.copy(parent.locals, parameters.locals ? objUtils.map(parameters.locals, of) : {});
-        objUtils.copy(parent.elements, loadElements(loader, parent));
-        parent.texture = createTexture(parameters.texture, parent.texture);
+            objUtils.copy(skeleton.locals, parameters.locals ? objUtils.map(parameters.locals, of) : {});
+            skeleton.texture = createTexture(parameters.texture, skeleton.texture);
 
-        parent.render = function render(context) {
-            Object.values(this.elements).forEach((element) => element.render(this, context));
-        };
+            return skeleton;
+        },
 
-        return parent;
+        getElements(loader, skeleton) {
+            if (parameters.parent) loader.getFile(parameters.parent).getElements(loader, skeleton);
+
+            objUtils.copy(skeleton.elements, loadElements(loader, skeleton));
+
+            return skeleton;
+        },
+
+        getModel(loader) {
+            const parent = this.getElements(loader, this.getSkeleton(loader));
+
+            parent.render = function render(ctx) {
+                Object.values(this.elements).forEach((element) => element.render(ctx));
+            };
+
+            return parent;
+        }
     };
 }
 
@@ -107,43 +109,50 @@ export function createFile(body: any) {
  */
 
 export function createLoader(): Loader {
-    const files: Record<string, ReturnType<typeof createFile>> = {};
+    const files = new Map<string, FileObject>();
 
     return {
-        getTexture: createTexture,
-
         addFile(filename, body) {
-            files[filename] = createFile(body);
+            files.set(filename, createFile(body));
         },
 
-        getElement(body, defaultId, model, locals, defineName) {
-            if (typeof body === "string") return Link(body, model);
+        getFile(filename) {
+            const file = files.get(filename);
+
+            if (!file) throw new Error(`Missing file "${filename}"`);
+
+            return file;
+        },
+
+        getElement(body, defaultId, model, locals, texture, name) {
+            if (typeof body === "string") return createLink(body, model, name);
 
             const type = body.type || defaultId;
 
             if (!ELEMENT_TYPES[type]) return null;
 
-            function createElement<T>(body: T) {
-                const element: Element = { render: ELEMENT_TYPES[type].render };
+            function createElement(body: any) {
+                const element: Element = { name, render: ELEMENT_TYPES[type].render };
 
                 objUtils.copy(element, body);
 
                 return element;
             }
 
-            const element = ELEMENT_TYPES[type].parse(this, body, locals, model, defineName, createElement);
+            // ({ loader, name, model, locals, texture, body, createElement });
+
+            const element = ELEMENT_TYPES[type].parse({ loader: this, name, model, locals, texture, body, createElement });
 
             return element;
         },
 
         getModel(filename) {
-            if (!files[filename]) throw new Error(`Missing file "${filename}"`);
-            return files[filename](this);
+            return this.getFile(filename).getModel(this);
         }
     };
 }
 
-function Link(id: string, model: Model): Element {
+function createLink(id: string, model: Model, name: string): Element {
     if (id.indexOf("#") != 0) throw new Error(`Link name should begin with a "#".`);
 
     id = id.substr(1);
@@ -151,11 +160,13 @@ function Link(id: string, model: Model): Element {
     let rendering: boolean;
 
     return {
-        render(parent, context) {
+        name,
+
+        render(ctx) {
             if (rendering) throw new Error("Cyclic reference in link");
 
             rendering = true;
-            model.elements[id].render(parent, context);
+            model.elements[id].render(ctx);
             rendering = false;
         }
     };

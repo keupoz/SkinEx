@@ -1,4 +1,4 @@
-import { Element, Model, TextureBody } from "./loader";
+import { Element, Model, TextureObject } from "./loader";
 
 export interface Slot {
     model: Model;
@@ -7,7 +7,7 @@ export interface Slot {
 export interface Box {
     from: number[];
     size: number[];
-    texture: TextureBody;
+    texture: TextureObject;
     stretch: number[];
     mirror?: boolean;
 }
@@ -18,7 +18,7 @@ export interface Compound {
     rotate: number[];
     mirror: boolean[];
     visible: boolean;
-    texture: TextureBody;
+    texture: TextureObject;
     children: Element[];
     cubes: Element[];
 }
@@ -26,7 +26,7 @@ export interface Compound {
 export interface Plane {
     position: number[];
     size: number[];
-    texture: TextureBody;
+    texture: TextureObject;
     mirror: boolean[];
     stretch: number[];
     face: string;
@@ -35,7 +35,7 @@ export interface Plane {
 export interface Face {
     position: number[];
     size: number[];
-    texture: TextureBody;
+    texture: TextureObject;
 }
 
 export interface Planar {

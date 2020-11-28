@@ -1,0 +1,147 @@
+@import "variables";
+
+.dropdown {
+    position: relative;
+
+    &--label {
+        background: $bg-color;
+        border: $border;
+        border-radius: $radius;
+        box-shadow: $shadow;
+        color: $color;
+        line-height: $height;
+        padding: 0 $padding;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        height: $height;
+
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            background-image: $darkness;
+        }
+
+        &:active {
+            background-image: $darkness, $darkness;
+            box-shadow: none;
+        }
+    }
+
+    &--icon::before {
+        content: "keyboard_arrow_down";
+    }
+
+    &--values {
+        margin-right: $padding;
+
+        flex-grow: 1;
+
+        &:empty::before {
+            content: attr(data-none);
+        }
+    }
+
+    &--options {
+        background: linear-gradient(rgba(black, 0.05), transparent) $bg-color;
+        border-bottom-left-radius: $radius;
+        border-bottom-right-radius: $radius;
+        box-shadow: $shadow;
+        color: $color;
+        display: none;
+        line-height: $height;
+        overflow-y: auto;
+        padding-bottom: $radius;
+
+        width: 100%;
+        max-height: 300px;
+
+        position: absolute;
+        z-index: 10;
+    }
+
+    &--option {
+        display: block;
+        padding: 0 $padding;
+
+        &:not(:last-child) {
+            border-bottom: $border;
+        }
+
+        &:hover {
+            background: rgba(black, 0.1);
+        }
+
+        &:active {
+            background: rgba(black, 0.2);
+        }
+
+        &.selected {
+            background: $gradient $primary-color;
+            color: $color-white;
+
+            &:hover {
+                background: $primary-color;
+            }
+
+            &:active {
+                background: $darkness $primary-color;
+            }
+        }
+    }
+
+    $class-name: #{&};
+
+    &--state:checked ~ & {
+        &--label {
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+
+            position: relative;
+            z-index: 10;
+
+            &::before {
+                content: "";
+
+                width: 100%;
+                height: 100%;
+
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            #{$class-name}--icon::before {
+                content: "keyboard_arrow_up";
+            }
+        }
+
+        &--options {
+            display: block;
+        }
+    }
+
+    .input-group & {
+        flex-grow: 1;
+
+        &.shrink {
+            flex-grow: unset;
+        }
+
+        &--label {
+            border-radius: 0;
+        }
+
+        &:first-child #{$class-name}--label {
+            border-top-left-radius: $radius;
+            border-bottom-left-radius: $radius;
+        }
+
+        &:last-child #{$class-name}--label {
+            border-top-right-radius: $radius;
+            border-bottom-right-radius: $radius;
+        }
+    }
+}

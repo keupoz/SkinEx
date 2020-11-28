@@ -1,0 +1,50 @@
+@import "variables";
+
+@keyframes loading {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(180deg);
+    }
+}
+
+#loader {
+    background: #3f3f43;
+    color: #d0d0d0;
+    font: bold 2em monospace;
+
+    width: 100%;
+    height: 100%;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+
+    &-animation {
+        $size: 48px;
+
+        animation: 2000ms linear 0s infinite loading;
+        border: 6px solid dodgerblue;
+        border-left-color: rgba(black, 0.1);
+        border-right-color: rgba(black, 0.1);
+        border-radius: 50%;
+
+        width: $size;
+        height: $size;
+    }
+
+    &-message {
+        margin: $content-gap;
+    }
+
+    &-error {
+        color: tomato;
+    }
+}
