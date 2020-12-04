@@ -13,12 +13,18 @@ export class SkinUtils {
         this.scale = this.ctx.canvas.width / 64;
     }
 
+    private getPixel(x: number, y: number) {
+        return this.ctx.getImageData(x, y, 1, 1).data.slice(0, 3).join(",");
+    }
+
     private isLegacy() {
+        if (this.getPixel(0, 0) === "0,0,0") return false;
+
         const s = this.scale;
 
         for (let x = 4 * s; x < 8 * s; x++)
             for (let y = 0; y < 8 * s; y++)
-                if (this.ctx.getImageData(x, y, 1, 1).data.slice(0, 3).join(",") !== "0,0,0") return false;
+                if (this.getPixel(x, y) !== "0,0,0") return false;
 
         return true;
     }

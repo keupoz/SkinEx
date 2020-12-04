@@ -60,13 +60,15 @@
         }
     }
 
+    #skin-retriever-error {
+        color: tomato;
+    }
+
     #account-actions {
         display: flex;
         align-items: center;
 
-        #user-nickname {
-            // margin: 0 $content-gap;
-
+        #account-nickname {
             flex-grow: 1;
         }
 

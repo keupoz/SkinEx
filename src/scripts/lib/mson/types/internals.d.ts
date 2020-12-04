@@ -1,29 +1,30 @@
-import { Element, Model, TextureObject } from "./loader";
+import { MsonComponent, MsonModel } from "./loader";
+import { TextureObject } from "./utils";
 
-export interface Slot {
-    model: Model;
+export interface MsonSlot {
+    model: MsonModel;
 }
 
-export interface Box {
+export interface MsonBox {
     from: number[];
     size: number[];
     texture: TextureObject;
     stretch: number[];
-    mirror?: boolean;
+    mirror: boolean;
 }
 
-export interface Compound {
+export interface MsonCompound {
     center: number[];
     offset: number[];
     rotate: number[];
     mirror: boolean[];
     visible: boolean;
     texture: TextureObject;
-    children: Element[];
-    cubes: Element[];
+    children: MsonComponent[];
+    cubes: MsonComponent[];
 }
 
-export interface Plane {
+export interface MsonPlane {
     position: number[];
     size: number[];
     texture: TextureObject;
@@ -32,22 +33,23 @@ export interface Plane {
     face: string;
 }
 
-export interface Face {
+export interface MsonFace {
+    direction: string;
     position: number[];
     size: number[];
     texture: TextureObject;
 }
 
-export interface Planar {
+export interface MsonPlanar {
     stretch: number[];
-    faces: Face[];
+    faces: MsonFace[];
 }
 
-export interface Cone extends Box {
+export interface MsonCone extends MsonBox {
     taper: number;
 }
 
-export interface Vertex {
+export interface MsonVertex {
     x: number;
     y: number;
     z: number;
@@ -55,16 +57,16 @@ export interface Vertex {
     v: number;
 }
 
-export interface Quad {
+export interface MsonQuad {
     x: number;
     y: number;
     w: number;
     h: number;
-    vertices: Vertex[];
+    vertices: MsonVertex[];
 }
 
-export interface Quads {
+export interface MsonQuads {
     u: number;
     v: number;
-    quads: Quad[];
+    quads: MsonQuad[];
 }

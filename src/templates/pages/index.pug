@@ -92,8 +92,6 @@ html(lang="en")
                 button#skin-reset.btn-icon(title="Reset skin settings") #[i.m-icon refresh]
 
             #preview
-                canvas
-
                 #preview-info
                     div Pose: #[span#preview-pose N/A];
                     div Item: #[span#preview-item N/A];
@@ -105,8 +103,10 @@ html(lang="en")
                 +labeled("Enter nickname to get started")
                     form#skin-retriever.input-group
                         +dropdown#skin-servers(title="Skin server to search for skin")
-                        input#skin-nickname.input(type="text", placeholder="Nickname", autocomplete="off", spellcheck="false")
+                        input#skin-retriever-nickname.input(type="text", placeholder="Nickname", autocomplete="off", spellcheck="false")
                         button.input.btn-primary.shrink(type="submit") #[i.m-icon check]
+
+                #skin-retriever-error(hidden) Can't download skin
 
                 //- +labeled("Sign in")
                     form#account-credentials.input-group
@@ -115,7 +115,7 @@ html(lang="en")
                         button.input.btn-primary(type="submit") #[i.m-icon check]
 
                 //- #account-actions
-                    #user-nickname Nickname
+                    #account-nickname Nickname
 
                     .input-group
                         button#account-signout.input.btn-secondary(title="Sign out") #[i.m-icon exit_to_app]

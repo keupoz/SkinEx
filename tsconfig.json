@@ -1,8 +1,6 @@
 {
     "compilerOptions": {
         "esModuleInterop": true,
-        "jsx": "react",
-        "jsxFactory": "h",
         "lib": ["ES6", "DOM"],
         "moduleResolution": "node",
         "noImplicitAny": true,

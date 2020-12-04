@@ -1,9 +1,30 @@
+export type TemplateFunction = (...values: string[]) => string;
+
 export function isPresent<T>(value: T | undefined): value is T {
     return value !== undefined;
 }
 
+export function isArrayInsideArray<T extends any[]>(arr: T | T[]): arr is T[] {
+    return Array.isArray(arr[0]);
+}
+
 export function normalizeWord(word: string) {
     return word[0].toUpperCase() + word.substr(1).toLowerCase();
+}
+
+export function template(literals: TemplateStringsArray, ...placeholders: string[]): TemplateFunction {
+    return (...values: string[]) => {
+        let result = "";
+
+        for (let i = 0; i < placeholders.length; i++) {
+            result += literals[i];
+            result += values[i] || placeholders[i];
+        }
+
+        result += literals[literals.length - 1];
+
+        return result;
+    };
 }
 
 export function logOfTwo(value: number) {

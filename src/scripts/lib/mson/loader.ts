@@ -1,91 +1,66 @@
+import { Object3D } from "three";
+import { ModelDecoder } from "./decoders";
 import { of } from "./incomplete";
-import { CreateTexture, Element, ElementType, FileObject, Loader, Model } from "./types/loader";
+import { ComponentType, MsonComponent, MsonFile, MsonLoader, MsonModel } from "./types/loader";
+import { clone, copy, createTexture, map } from "./utils";
 
-export const createTexture: CreateTexture = (body, parent) => {
-    if (Array.isArray(body)) {
-        return {
-            u: body[0] || parent?.u || 0,
-            v: body[1] || parent?.v || 0,
-            w: body[2] || parent?.w || 0,
-            h: body[3] || parent?.h || 0
-        };
-    }
-
-    return {
-        u: body?.u || parent?.u || 0,
-        v: body?.v || parent?.v || 0,
-        w: body?.w || parent?.w || 0,
-        h: body?.h || parent?.h || 0
-    };
-};
-
-const RESERVED_KEYS = "parent;locals;texture;scale".split(";"),
-    ELEMENT_TYPES: Record<string, ElementType<any>> = {},
+const COMPONENT_TYPES: Record<string, ComponentType<any, any>> = {},
     DEFAULT_TEXTURE = createTexture([0, 0, 64, 32]);
 
-export const objUtils = {
-    map<T, K>(obj: Record<string, T>, valueMapper: (value: T, key: string) => K) {
-        const result: Record<string, K> = {};
-        Object.keys(obj).forEach((key) => result[key] = valueMapper(obj[key], key));
-        return result;
-    },
+export function createFile(body: any): MsonFile {
+    body = typeof body === "string" ? JSON.parse(body) : body;
 
-    copy<T>(to: Record<string, T>, from: Record<string, T>) {
-        Object.keys(from).forEach((key) => to[key] = from[key]);
-        return to;
-    },
+    const rawModel = ModelDecoder.runWithException(body);
 
-    subset(obj: Record<string, any>, keys: string[]) {
-        const result: typeof obj = {};
-        keys.forEach((key) => result[key] = obj[key]);
-        return result;
-    }
-};
-
-export function createFile(body: any): FileObject {
-    const parameters = typeof body === "string" ? JSON.parse(body) : body;
-
-    function loadElements(loader: Loader, model: Model) {
-        const { locals, texture } = model,
-            elementNames = Object.keys(parameters).filter((key) => RESERVED_KEYS.indexOf(key) === -1),
-            elements = objUtils.map(objUtils.subset(parameters, elementNames), (element, name) => {
-                return loader.getElement(element, "mson:compound", model, locals, texture, name);
+    function loadElements(loader: MsonLoader, model: MsonModel) {
+        const { rawLocals, locals, texture } = model,
+            components = map(rawModel.components, (component, name) => {
+                return loader.getComponent(component, "mson:compound", model, rawLocals, locals, texture, name);
             });
 
-        return elements;
+        return components;
     }
 
     return {
-        getSkeleton(loader) {
-            const skeleton: Model = parameters.parent ? loader.getModel(parameters.parent) : {
+        getSkeleton(loader, rawLocals, texture) {
+            const skeleton: MsonModel = rawModel.parent ? loader.getModel(rawModel.parent) : {
                 name: "__root__",
+                rawLocals: rawLocals ? clone(rawLocals) : {},
                 locals: {},
-                elements: {},
-                texture: DEFAULT_TEXTURE,
+                components: {},
+                texture: texture ? clone(texture) : DEFAULT_TEXTURE,
                 scale: 0,
 
-                render() { }
+                render() { return new Object3D(); }
             };
 
-            objUtils.copy(skeleton.locals, parameters.locals ? objUtils.map(parameters.locals, of) : {});
-            skeleton.texture = createTexture(parameters.texture, skeleton.texture);
+            copy(skeleton.rawLocals, rawModel.locals || {});
+            copy(skeleton.locals, rawModel.locals ? map(rawModel.locals, of) : {});
+            skeleton.texture = createTexture(rawModel.texture, skeleton.texture);
 
             return skeleton;
         },
 
         getElements(loader, skeleton) {
-            if (parameters.parent) loader.getFile(parameters.parent).getElements(loader, skeleton);
+            if (rawModel.parent) loader.getFile(rawModel.parent).getElements(loader, skeleton);
 
-            objUtils.copy(skeleton.elements, loadElements(loader, skeleton));
+            copy(skeleton.components, loadElements(loader, skeleton));
 
             return skeleton;
         },
 
-        getModel(loader) {
-            const parent = this.getElements(loader, this.getSkeleton(loader));
+        getModel(loader, rawLocals, texture) {
+            const parent = this.getElements(loader, this.getSkeleton(loader, rawLocals, texture));
 
-            parent.render = function render(ctx) {
-                Object.values(this.elements).forEach((element) => element.render(ctx));
+            parent.render = function render(createMesh) {
+                const model = new Object3D();
+
+                Object.values(this.components).forEach((component) => {
+                    const child = component.render(createMesh);
+                    model.add(child);
+                });
+
+                return model;
             };
 
             return parent;
@@ -107,9 +82,8 @@ export function createFile(body: any): FileObject {
  * skeletonModel.render();
  * ```
  */
-
-export function createLoader(): Loader {
-    const files = new Map<string, FileObject>();
+export function createLoader(): MsonLoader {
+    const files = new Map<string, MsonFile>();
 
     return {
         addFile(filename, body) {
@@ -124,35 +98,34 @@ export function createLoader(): Loader {
             return file;
         },
 
-        getElement(body, defaultId, model, locals, texture, name) {
+        getComponent(body, defaultId, model, rawLocals, locals, texture, name) {
             if (typeof body === "string") return createLink(body, model, name);
 
-            const type = body.type || defaultId;
+            const type = COMPONENT_TYPES[body.type || defaultId];
 
-            if (!ELEMENT_TYPES[type]) return null;
+            if (!type) return null;
 
             function createElement(body: any) {
-                const element: Element = { name, render: ELEMENT_TYPES[type].render };
-
-                objUtils.copy(element, body);
-
+                const element: MsonComponent = { name, render: type.render };
+                copy(element, body);
                 return element;
             }
 
+            body = type.decoder.runWithException(body);
+
             // ({ loader, name, model, locals, texture, body, createElement });
-
-            const element = ELEMENT_TYPES[type].parse({ loader: this, name, model, locals, texture, body, createElement });
-
-            return element;
+            const result = type.parse({ loader: this, name, model, rawLocals, locals, texture, body, createElement });
+            return result;
         },
 
-        getModel(filename) {
-            return this.getFile(filename).getModel(this);
+        getModel(filename, rawLocals, texture) {
+            console.info(`Requested model "${filename}"`);
+            return this.getFile(filename).getModel(this, rawLocals, texture);
         }
     };
 }
 
-function createLink(id: string, model: Model, name: string): Element {
+function createLink(id: string, model: MsonModel, name: string): MsonComponent {
     if (id.indexOf("#") != 0) throw new Error(`Link name should begin with a "#".`);
 
     id = id.substr(1);
@@ -162,16 +135,18 @@ function createLink(id: string, model: Model, name: string): Element {
     return {
         name,
 
-        render(ctx) {
+        render(createObject) {
             if (rendering) throw new Error("Cyclic reference in link");
 
             rendering = true;
-            model.elements[id].render(ctx);
+            const object = model.components[id].render(createObject);
             rendering = false;
+
+            return object;
         }
     };
 }
 
-export function addElementType<T>(type: string, parse: ElementType<T>["parse"], render: ElementType<T>["render"]) {
-    ELEMENT_TYPES[type] = { parse, render };
+export function addElementType<T, K>(type: string, elementType: ComponentType<T, K>) {
+    COMPONENT_TYPES[type] = elementType;
 }

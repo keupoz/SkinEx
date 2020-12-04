@@ -1,58 +1,50 @@
-import { Locals } from "./incomplete";
+import { Decoder } from "@mojotech/json-type-validation";
+import { BufferGeometry, Mesh, Object3D } from "three";
+import { Locals, RawLocals, TextureObject } from "./utils";
 
-export type RenderContext = CanvasRenderingContext2D;
+type CreateMesh = (geometry: BufferGeometry) => Mesh;
+type RenderMsonComponent<T> = (this: T, createMesh: CreateMesh) => Object3D;
 
-export type TextureObject = {
-    u: number;
-    v: number;
-    w: number;
-    h: number;
-};
-export type TextureArray = number[];
-export type TextureBody = TextureArray | Partial<TextureObject>;
-export type CreateTexture = (body?: TextureBody, parent?: TextureObject) => TextureObject;
-
-export type Local = string | number;
-
-type RenderElement<T> = (this: T, context: RenderContext) => void;
-
-export interface FileObject {
-    getSkeleton(loader: Loader): Model;
-    getElements(loader: Loader, skeleton: Model): Model;
-    getModel(loader: Loader): Model;
+export interface MsonFile {
+    getSkeleton(loader: MsonLoader, rawLocals?: RawLocals, texture?: TextureObject): MsonModel;
+    getElements(loader: MsonLoader, skeleton: MsonModel): MsonModel;
+    getModel(loader: MsonLoader, rawLocals?: RawLocals, texture?: TextureObject): MsonModel;
 }
 
-export interface Element {
+export interface MsonComponent {
     name: string;
-    render: RenderElement<this>;
+    render: RenderMsonComponent<this>;
     [key: string]: any;
 }
 
-export interface Model extends Element {
+export interface MsonModel extends MsonComponent {
+    rawLocals: RawLocals;
     locals: Locals;
-    elements: Record<string, Element>;
+    components: Record<string, MsonComponent>;
     texture: TextureObject;
     scale: number;
 }
 
-export interface ParseObject<T> {
-    loader: Loader;
+export interface MsonContext<T, K> {
+    loader: MsonLoader;
     name: string;
-    model: Model;
+    model: MsonModel;
+    rawLocals: RawLocals;
     locals: Locals;
     texture: TextureObject;
-    body: any;
-    createElement: (body: T) => T & Element
+    body: K;
+    createElement: (body: T) => T & MsonComponent
 }
 
-export interface ElementType<T> {
-    parse(obj: ParseObject<T>): T & Element;
-    render: RenderElement<T & Element>;
+export interface ComponentType<T, K> {
+    decoder: Decoder<K>;
+    parse(obj: MsonContext<T, K>): T & MsonComponent;
+    render: RenderMsonComponent<T & MsonComponent>;
 }
 
-export interface Loader {
+export interface MsonLoader {
     addFile(filename: string, body: any): void;
-    getFile(filename: string): FileObject;
-    getElement(body: any, defaultId: string, model: Model, locals: Locals, texture: TextureObject, name: string): Element | null;
-    getModel(filename: string): Model;
+    getFile(filename: string): MsonFile;
+    getComponent(body: any, defaultId: string, model: MsonModel, rawLocals: RawLocals, locals: Locals, texture: TextureObject, name: string): MsonComponent | null;
+    getModel(filename: string, rawLocals?: RawLocals, texture?: TextureObject): MsonModel;
 }

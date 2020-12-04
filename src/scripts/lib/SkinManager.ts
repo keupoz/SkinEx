@@ -36,6 +36,10 @@ export class SkinManager {
         return { width, height };
     }
 
+    public getCanvas() {
+        return this.outputCtx.canvas;
+    }
+
     public setBlob(blob: Blob, name: string) {
         return this.setFile(new File([blob], name));
     }
@@ -64,8 +68,12 @@ export class SkinManager {
                     this.originalCtx.canvas.height = height;
                     this.originalCtx.imageSmoothingEnabled = false;
 
+                    this.pixelsCtx.clearRect(0, 0, 4, 2);
+                    this.originalCtx.clearRect(0, 0, width, height);
+
                     this.pixelsCtx.drawImage(img, 0, 0);
                     this.originalCtx.drawImage(img, 0, 0, width, height);
+
                     this.utils.convert();
 
                     this.updateOutput();

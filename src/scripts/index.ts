@@ -1,19 +1,22 @@
 import { querySelector } from "@keupoz/strict-queryselector";
+import { isDecoderError } from "@mojotech/json-type-validation";
+import { version } from "../../package.json";
 import { Range } from "./lib/components/common/Range";
 import { Dropzone } from "./lib/components/Dropzone";
 import { Loader } from "./lib/components/Loader";
+import { registerModels } from "./lib/config/models.config";
+import { registerPixels } from "./lib/config/pixels.config";
+import { getServers } from "./lib/config/servers.config";
+import { ModelManager } from "./lib/ModelManager";
 import { PixelManager } from "./lib/PixelManager";
-import { registerPixels } from "./lib/pixels.config";
+import { SceneManager } from "./lib/SceneManager";
+import { ServerManager } from "./lib/ServerManager";
 import { SkinManager } from "./lib/SkinManager";
 import { logOfTwo } from "./lib/utils";
 
-async function loadDefaultSkin() {
-    const response = await fetch("assets/skins/DaringDo.png");
-    if (response.status !== 200) throw new Error("Couldn't load default skin");
-    return await response.blob();
-}
-
 async function init() {
+    querySelector("#app-name", HTMLElement).setAttribute("data-version", version);
+
     const dropzone = new Dropzone();
 
     const $skinWidthLabel = querySelector("#layout-width-label .labeled--label", HTMLElement),
@@ -37,11 +40,32 @@ async function init() {
 
         skinWidth.setValue(logOfTwo(width));
         $skinWidthLabel.setAttribute("data-info", `${width}px`);
+
+        modelManager.material.update();
+        sceneManager.render();
     });
 
     const pixelManager = new PixelManager((x, y, color) => {
         skinManager.setPixel(x, y, color);
     });
+
+    const serverManager = new ServerManager(getServers(), (blob, nickname) => {
+        skinManager.setBlob(blob, nickname);
+    });
+
+    const $previewHighlighted = querySelector("#preview-highlighted", HTMLElement);
+
+    const sceneManager = new SceneManager((name) => {
+        $previewHighlighted.innerText = name;
+    });
+
+    const modelManager = new ModelManager(skinManager.getCanvas());
+
+    await registerModels(modelManager);
+    sceneManager.setModel(modelManager.getModel("minelittlepony:steve_pony"));
+
+    querySelector("#preview", HTMLElement).prepend(sceneManager.domElement);
+    sceneManager.updateSize();
 
     const $skinLoadInput = document.createElement("input"),
         $skinLoad = querySelector("#skin-load", HTMLButtonElement),
@@ -86,16 +110,20 @@ async function init() {
         }
     });
 
-    // TODO search for first png file, not just take any first file
     function getDropFile(e: DragEvent) {
-        if (e.dataTransfer) {
-            const file = e.dataTransfer.files[0];
-            if (file && file.type === "image/png") return file;
+        const transfer = e.dataTransfer;
+
+        if (transfer) {
+            for (let i = 0; i < transfer.files.length; i++) {
+                const file = transfer.files[i];
+                if (file.type === "image/png") return file;
+            }
         }
 
         return null;
     }
 
+    // https://stackoverflow.com/a/21002544
     let dragCounter = 0;
 
     document.addEventListener("dragenter", (e) => {
@@ -141,7 +169,7 @@ async function init() {
 
     registerPixels(pixelManager);
 
-    const defaultSkin = await loadDefaultSkin();
+    const defaultSkin = await serverManager.fetchCustom("assets/skins/DaringDo.png");
     await skinManager.setBlob(defaultSkin, "DaringDo");
 }
 
@@ -153,6 +181,9 @@ async function init() {
         loader.destroy();
     } catch (err) {
         console.error("Error occurred while loading", err);
-        loader.showError(err);
+
+        if (isDecoderError(err)) {
+            loader.showError(`${err.kind}: ${err.message}`);
+        } else loader.showError(err);
     }
 })();

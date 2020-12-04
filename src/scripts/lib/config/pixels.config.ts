@@ -1,4 +1,4 @@
-import { PixelManager } from "./PixelManager";
+import { PixelManager } from "../PixelManager";
 
 export function registerPixels(pixelManager: PixelManager) {
     pixelManager.registerPixel(0, 0, "race", "SELECT", [

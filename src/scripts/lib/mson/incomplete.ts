@@ -1,4 +1,4 @@
-import { GetLocal, Locals, Tokens } from "./types/incomplete";
+import { Expression, Locals, ResolveLocal } from "./types/utils";
 
 const FUNCS: Record<string, Function> = {
     "+": (a: number, b: number) => a + b,
@@ -10,7 +10,7 @@ const FUNCS: Record<string, Function> = {
 };
 const OPERATIONS = Object.keys(FUNCS).join(", ");
 
-function singleEntrant(func: GetLocal) {
+function singleEntrant(func: ResolveLocal) {
     let circularCheck: boolean;
 
     return function (locals: Locals) {
@@ -23,12 +23,8 @@ function singleEntrant(func: GetLocal) {
     };
 }
 
-export function of(tokens: Tokens): GetLocal {
+export function of(tokens: Expression): ResolveLocal {
     if (Array.isArray(tokens)) {
-        if (tokens.length !== 3) {
-            throw new Error(`Saw a local of ${tokens.length} members. Expected 3 of (left, op, right).`);
-        }
-
         const operator = tokens[1];
 
         if (typeof operator === "number") throw new Error("Operation must be a string.");
@@ -52,7 +48,7 @@ export function of(tokens: Tokens): GetLocal {
         return () => tokens;
     }
 
-    throw new Error("Unsupported local type. A local must be either a value (number) string (#variable) or an array");
+    throw new Error(`Unsupported local type. A local must be either a value (number), string (#variable) or an array. Got ${typeof tokens}`);
 }
 
 export function array(arr: Array<string | number>) {
